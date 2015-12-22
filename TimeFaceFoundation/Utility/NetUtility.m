@@ -87,7 +87,7 @@
     
     
     NSURLSessionUploadTask *uploadTask = [manager uploadTaskWithStreamedRequest:request
-                                                                       progress:^(NSProgress * _Nonnull uploadProgress) {
+                                                                       progress:^(NSProgress * __autoreleasing uploadProgress) {
                                                                            
                                                                        }
                                                               completionHandler:^(NSURLResponse *response, id responseObject, NSError *error)
