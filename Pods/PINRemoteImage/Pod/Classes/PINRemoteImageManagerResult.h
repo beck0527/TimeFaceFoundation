@@ -6,7 +6,13 @@
 //
 //
 
+#import <Foundation/Foundation.h>
+
+#if PIN_TARGET_IOS
 #import <UIKit/UIKit.h>
+#elif PIN_TARGET_MAC
+#import <Cocoa/Cocoa.h>
+#endif
 
 #import "PINRemoteImageMacros.h"
 #if USE_FLANIMATED_IMAGE
@@ -29,18 +35,27 @@ typedef NS_ENUM(NSUInteger, PINRemoteImageResultType) {
 
 @interface PINRemoteImageManagerResult : NSObject
 
-@property (nonatomic, readonly, strong) UIImage *image;
-@property (nonatomic, readonly, strong) FLAnimatedImage *animatedImage;
+@property (nonatomic, readonly, strong, nullable) PINImage *image;
+@property (nonatomic, readonly, strong, nullable) id alternativeRepresentation;
 @property (nonatomic, readonly, assign) NSTimeInterval requestDuration;
-@property (nonatomic, readonly, strong) NSError *error;
+@property (nonatomic, readonly, strong, nullable) NSError *error;
 @property (nonatomic, readonly, assign) PINRemoteImageResultType resultType;
-@property (nonatomic, readonly, strong) NSUUID *UUID;
+@property (nonatomic, readonly, strong, nullable) NSUUID *UUID;
+@property (nonatomic, readonly, assign) CGFloat renderedImageQuality;
 
-+ (instancetype)imageResultWithImage:(UIImage *)image
-                       animatedImage:(FLAnimatedImage *)animatedImage
++ (nonnull instancetype)imageResultWithImage:(nullable PINImage *)image
+           alternativeRepresentation:(nullable id)alternativeRepresentation
                        requestLength:(NSTimeInterval)requestLength
-                               error:(NSError *)error
+                               error:(nullable NSError *)error
                           resultType:(PINRemoteImageResultType)resultType
-                                UUID:(NSUUID *)uuid;
+                                UUID:(nullable NSUUID *)uuid;
+
++ (nonnull instancetype)imageResultWithImage:(nullable PINImage *)image
+                   alternativeRepresentation:(nullable id)alternativeRepresentation
+                               requestLength:(NSTimeInterval)requestLength
+                                       error:(nullable NSError *)error
+                                  resultType:(PINRemoteImageResultType)resultType
+                                        UUID:(nullable NSUUID *)uuid
+                        renderedImageQuality:(CGFloat)renderedImageQuality;
 
 @end

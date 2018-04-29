@@ -2,11 +2,10 @@
 //  TimeFaceFoundationTests.m
 //  TimeFaceFoundationTests
 //
-//  Created by zguanyu on 9/10/15.
-//  Copyright (c) 2015 timeface. All rights reserved.
+//  Created by 鲍振华 on 2018/4/29.
+//  Copyright © 2018年 鲍振华. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
 @interface TimeFaceFoundationTests : XCTestCase
@@ -27,7 +26,7 @@
 
 - (void)testExample {
     // This is an example of a functional test case.
-    XCTAssert(YES, @"Pass");
+    // Use XCTAssert and related functions to verify your tests produce the correct results.
 }
 
 - (void)testPerformanceExample {

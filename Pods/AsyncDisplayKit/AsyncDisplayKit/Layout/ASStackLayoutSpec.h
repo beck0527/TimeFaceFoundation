@@ -1,16 +1,17 @@
-/*
- *  Copyright (c) 2014-present, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
+//
+//  ASStackLayoutSpec.h
+//  AsyncDisplayKit
+//
+//  Copyright (c) 2014-present, Facebook, Inc.  All rights reserved.
+//  This source code is licensed under the BSD-style license found in the
+//  LICENSE file in the root directory of this source tree. An additional grant
+//  of patent rights can be found in the PATENTS file in the same directory.
+//
 
 #import <AsyncDisplayKit/ASLayoutSpec.h>
 #import <AsyncDisplayKit/ASStackLayoutDefines.h>
 
+NS_ASSUME_NONNULL_BEGIN
 
 /**
  A simple layout spec that stacks a list of children vertically or horizontally.
@@ -70,7 +71,7 @@
  @param alignItems Orientation of the children along the cross axis
  @param children ASLayoutable children to be positioned.
  */
-+ (instancetype)stackLayoutSpecWithDirection:(ASStackLayoutDirection)direction spacing:(CGFloat)spacing justifyContent:(ASStackLayoutJustifyContent)justifyContent alignItems:(ASStackLayoutAlignItems)alignItems children:(NSArray *)children;
++ (instancetype)stackLayoutSpecWithDirection:(ASStackLayoutDirection)direction spacing:(CGFloat)spacing justifyContent:(ASStackLayoutJustifyContent)justifyContent alignItems:(ASStackLayoutAlignItems)alignItems children:(NSArray<id<ASLayoutable>> *)children;
 
 /**
  * @return A stack layout spec with direction of ASStackLayoutDirectionVertical
@@ -83,3 +84,5 @@
 + (instancetype)horizontalStackLayoutSpec;
 
 @end
+
+NS_ASSUME_NONNULL_END

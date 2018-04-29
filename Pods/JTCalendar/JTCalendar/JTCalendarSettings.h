@@ -28,10 +28,16 @@ typedef NS_ENUM(NSInteger, JTCalendarWeekDayFormat) {
 @property (nonatomic) NSUInteger pageViewNumberOfWeeks;
 @property (nonatomic) BOOL pageViewHaveWeekDaysView;
 @property (nonatomic) NSUInteger pageViewWeekModeNumberOfWeeks;
+@property (nonatomic) BOOL pageViewWeekDaysViewAutomaticHeight;
 
 // WeekDay view
 
 @property (nonatomic) JTCalendarWeekDayFormat weekDayFormat;
+
+
+// Day view
+
+@property (nonatomic) BOOL zeroPaddedDayFormat;
 
 
 // Use for override

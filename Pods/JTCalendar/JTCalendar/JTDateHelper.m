@@ -9,11 +9,23 @@
 
 @interface JTDateHelper (){
     NSCalendar *_calendar;
+    NSLocale *_locale;
+    NSTimeZone *_timeZone;
 }
 
 @end
 
 @implementation JTDateHelper
+
+- (instancetype)initWithLocale:(NSLocale *)locale andTimeZone:(NSTimeZone *)timeZone
+{
+    self = [super init];
+    if (self) {
+        _locale = locale;
+        _timeZone = timeZone;
+    }
+    return self;
+}
 
 - (NSCalendar *)calendar
 {
@@ -23,8 +35,8 @@
 #else
         _calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
 #endif
-        _calendar.timeZone = [NSTimeZone localTimeZone];
-        _calendar.locale = [NSLocale currentLocale];
+        _calendar.timeZone = _timeZone;
+        _calendar.locale = _locale;
     }
     
     return _calendar;
@@ -74,14 +86,6 @@
     NSDateComponents *componentsB = [self.calendar components:NSCalendarUnitWeekOfYear fromDate:lastDay];
     
     // weekOfYear may return 53 for the first week of the year
-    // hack
-    if(componentsB.weekOfYear == 53){
-        componentsB.weekOfYear = 0;
-    }
-    if(componentsA.weekOfYear == 53){
-        componentsA.weekOfYear = 0;
-    }
-    
     return (componentsB.weekOfYear - componentsA.weekOfYear + 52 + 1) % 52;
 }
 

@@ -18,24 +18,24 @@
  *  @param animated
  *  @param faceAware
  */
-- (void)tf_setImageWithURL:(NSURL *)url
-          placeholderImage:(UIImage *)placeholder
-                  animated:(BOOL)animated
-                 faceAware:(BOOL)faceAware;
+//- (void)tf_setImageWithURL:(NSURL *)url
+//          placeholderImage:(UIImage *)placeholder
+//                  animated:(BOOL)animated
+//                 faceAware:(BOOL)faceAware;
 
-- (void)tf_setImageWithURL:(NSURL *)url
-          placeholderImage:(UIImage *)placeholder
-                 completed:(SDWebImageCompletionBlock)completedBlock
-                  animated:(BOOL)animated
-                 faceAware:(BOOL)faceAware;
-
-- (void)tf_setImageWithURL:(NSURL *)url
-          placeholderImage:(UIImage *)placeholder
-                   options:(SDWebImageOptions)options
-                  progress:(SDWebImageDownloaderProgressBlock)progressBlock
-                 completed:(SDWebImageCompletionBlock)completedBlock
-                  animated:(BOOL)animated
-                 faceAware:(BOOL)faceAware;
+//- (void)tf_setImageWithURL:(NSURL *)url
+//          placeholderImage:(UIImage *)placeholder
+//                 completed:(SDWebImageCompletionBlock)completedBlock
+//                  animated:(BOOL)animated
+//                 faceAware:(BOOL)faceAware;
+//
+//- (void)tf_setImageWithURL:(NSURL *)url
+//          placeholderImage:(UIImage *)placeholder
+//                   options:(SDWebImageOptions)options
+//                  progress:(SDWebImageDownloaderProgressBlock)progressBlock
+//                 completed:(SDWebImageCompletionBlock)completedBlock
+//                  animated:(BOOL)animated
+//                 faceAware:(BOOL)faceAware;
 
 
 @end

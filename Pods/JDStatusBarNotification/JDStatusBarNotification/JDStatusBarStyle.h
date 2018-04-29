@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 extern NSString *const JDStatusBarStyleError;   /// This style has a red background with a white Helvetica label.
 extern NSString *const JDStatusBarStyleWarning; /// This style has a yellow background with a gray Helvetica label.
@@ -65,6 +66,12 @@ typedef NS_ENUM(NSInteger, JDStatusBarProgressBarPosition) {
 
 /// The position of the progress bar. Default is JDStatusBarProgressBarPositionBottom
 @property (nonatomic, assign) JDStatusBarProgressBarPosition progressBarPosition;
+
+/// The insets of the progress bar. Default is 0.0
+@property (nonatomic, assign) CGFloat progressBarHorizontalInsets;
+
+/// The corner radius of the progress bar. Default is 0.0
+@property (nonatomic, assign) CGFloat progressBarCornerRadius;
 
 @end
 

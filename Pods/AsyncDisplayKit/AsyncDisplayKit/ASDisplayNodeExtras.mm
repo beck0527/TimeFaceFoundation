@@ -1,14 +1,33 @@
-/* Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- */
+//
+//  ASDisplayNodeExtras.mm
+//  AsyncDisplayKit
+//
+//  Copyright (c) 2014-present, Facebook, Inc.  All rights reserved.
+//  This source code is licensed under the BSD-style license found in the
+//  LICENSE file in the root directory of this source tree. An additional grant
+//  of patent rights can be found in the PATENTS file in the same directory.
+//
 
 #import "ASDisplayNodeExtras.h"
 #import "ASDisplayNodeInternal.h"
 #import "ASDisplayNode+FrameworkPrivate.h"
+
+#import <queue>
+
+extern ASInterfaceState ASInterfaceStateForDisplayNode(ASDisplayNode *displayNode, UIWindow *window)
+{
+    ASDisplayNodeCAssert(![displayNode isLayerBacked], @"displayNode must not be layer backed as it may have a nil window");
+    if (displayNode && [displayNode supportsRangeManagedInterfaceState]) {
+        // Directly clear the visible bit if we are not in a window. This means that the interface state is,
+        // if not already, about to be set to invisible as it is not possible for an element to be visible
+        // while outside of a window.
+        ASInterfaceState interfaceState = displayNode.interfaceState;
+        return (window == nil ? (interfaceState &= (~ASInterfaceStateVisible)) : interfaceState);
+    } else {
+        // For not range managed nodes we might be on our own to try to guess if we're visible.
+        return (window == nil ? ASInterfaceStateNone : (ASInterfaceStateVisible | ASInterfaceStateDisplay));
+    }
+}
 
 extern ASDisplayNode *ASLayerToDisplayNode(CALayer *layer)
 {
@@ -31,17 +50,38 @@ extern void ASDisplayNodePerformBlockOnEveryNode(CALayer *layer, ASDisplayNode *
   if (node) {
     block(node);
   }
-  if (!layer && [node isNodeLoaded]) {
+  if (!layer && [node isNodeLoaded] && ASDisplayNodeThreadIsMain()) {
     layer = node.layer;
   }
   
   if (layer) {
-    for (CALayer *sublayer in [layer sublayers]) {
+    /// NOTE: The docs say `sublayers` returns a copy, but it does not.
+    /// See: http://stackoverflow.com/questions/14854480/collection-calayerarray-0x1ed8faa0-was-mutated-while-being-enumerated
+    for (CALayer *sublayer in [[layer sublayers] copy]) {
       ASDisplayNodePerformBlockOnEveryNode(sublayer, nil, block);
     }
   } else if (node) {
     for (ASDisplayNode *subnode in [node subnodes]) {
       ASDisplayNodePerformBlockOnEveryNode(nil, subnode, block);
+    }
+  }
+}
+
+extern void ASDisplayNodePerformBlockOnEveryNodeBFS(ASDisplayNode *node, void(^block)(ASDisplayNode *node))
+{
+  // Queue used to keep track of subnodes while traversing this layout in a BFS fashion.
+  std::queue<ASDisplayNode *> queue;
+  queue.push(node);
+  
+  while (!queue.empty()) {
+    node = queue.front();
+    queue.pop();
+    
+    block(node);
+
+    // Add all subnodes to process in next step
+    for (ASDisplayNode *subnode in node.subnodes) {
+      queue.push(subnode);
     }
   }
 }
@@ -53,7 +93,7 @@ extern void ASDisplayNodePerformBlockOnEverySubnode(ASDisplayNode *node, void(^b
   }
 }
 
-id ASDisplayNodeFind(ASDisplayNode *node, BOOL (^block)(ASDisplayNode *node))
+ASDisplayNode *ASDisplayNodeFindFirstSupernode(ASDisplayNode *node, BOOL (^block)(ASDisplayNode *node))
 {
   CALayer *layer = node.layer;
 
@@ -68,9 +108,9 @@ id ASDisplayNodeFind(ASDisplayNode *node, BOOL (^block)(ASDisplayNode *node))
   return nil;
 }
 
-id ASDisplayNodeFindClass(ASDisplayNode *start, Class c)
+__kindof ASDisplayNode *ASDisplayNodeFindFirstSupernodeOfClass(ASDisplayNode *start, Class c)
 {
-  return ASDisplayNodeFind(start, ^(ASDisplayNode *n) {
+  return ASDisplayNodeFindFirstSupernode(start, ^(ASDisplayNode *n) {
     return [n isKindOfClass:c];
   });
 }
@@ -87,7 +127,7 @@ static void _ASCollectDisplayNodes(NSMutableArray *array, CALayer *layer)
     _ASCollectDisplayNodes(array, sublayer);
 }
 
-extern NSArray *ASCollectDisplayNodes(ASDisplayNode *node)
+extern NSArray<ASDisplayNode *> *ASCollectDisplayNodes(ASDisplayNode *node)
 {
   NSMutableArray *list = [NSMutableArray array];
   for (CALayer *sublayer in node.layer.sublayers) {
@@ -105,21 +145,21 @@ static void _ASDisplayNodeFindAllSubnodes(NSMutableArray *array, ASDisplayNode *
 
   for (ASDisplayNode *subnode in node.subnodes) {
     if (block(subnode)) {
-      [array addObject:node];
+      [array addObject:subnode];
     }
 
     _ASDisplayNodeFindAllSubnodes(array, subnode, block);
   }
 }
 
-extern NSArray *ASDisplayNodeFindAllSubnodes(ASDisplayNode *start, BOOL (^block)(ASDisplayNode *node))
+extern NSArray<ASDisplayNode *> *ASDisplayNodeFindAllSubnodes(ASDisplayNode *start, BOOL (^block)(ASDisplayNode *node))
 {
   NSMutableArray *list = [NSMutableArray array];
   _ASDisplayNodeFindAllSubnodes(list, start, block);
   return list;
 }
 
-extern NSArray *ASDisplayNodeFindAllSubnodesOfClass(ASDisplayNode *start, Class c)
+extern NSArray<__kindof ASDisplayNode *> *ASDisplayNodeFindAllSubnodesOfClass(ASDisplayNode *start, Class c)
 {
   return ASDisplayNodeFindAllSubnodes(start, ^(ASDisplayNode *n) {
     return [n isKindOfClass:c];
@@ -128,10 +168,10 @@ extern NSArray *ASDisplayNodeFindAllSubnodesOfClass(ASDisplayNode *start, Class 
 
 #pragma mark - Find first subnode
 
-static ASDisplayNode *_ASDisplayNodeFindFirstSubnode(ASDisplayNode *startNode, BOOL includeStartNode, BOOL (^block)(ASDisplayNode *node))
+static ASDisplayNode *_ASDisplayNodeFindFirstNode(ASDisplayNode *startNode, BOOL includeStartNode, BOOL (^block)(ASDisplayNode *node))
 {
   for (ASDisplayNode *subnode in startNode.subnodes) {
-    ASDisplayNode *foundNode = _ASDisplayNodeFindFirstSubnode(subnode, YES, block);
+    ASDisplayNode *foundNode = _ASDisplayNodeFindFirstNode(subnode, YES, block);
     if (foundNode) {
       return foundNode;
     }
@@ -143,21 +183,26 @@ static ASDisplayNode *_ASDisplayNodeFindFirstSubnode(ASDisplayNode *startNode, B
   return nil;
 }
 
-extern id ASDisplayNodeFindFirstSubnode(ASDisplayNode *startNode, BOOL (^block)(ASDisplayNode *node))
+extern __kindof ASDisplayNode *ASDisplayNodeFindFirstNode(ASDisplayNode *startNode, BOOL (^block)(ASDisplayNode *node))
 {
-  return _ASDisplayNodeFindFirstSubnode(startNode, NO, block);
+  return _ASDisplayNodeFindFirstNode(startNode, YES, block);
 }
 
-extern id ASDisplayNodeFindFirstSubnodeOfClass(ASDisplayNode *start, Class c)
+extern __kindof ASDisplayNode *ASDisplayNodeFindFirstSubnode(ASDisplayNode *startNode, BOOL (^block)(ASDisplayNode *node))
+{
+  return _ASDisplayNodeFindFirstNode(startNode, NO, block);
+}
+
+extern __kindof ASDisplayNode *ASDisplayNodeFindFirstSubnodeOfClass(ASDisplayNode *start, Class c)
 {
   return ASDisplayNodeFindFirstSubnode(start, ^(ASDisplayNode *n) {
     return [n isKindOfClass:c];
   });
 }
 
-static inline BOOL _ASDisplayNodeIsAncestorOfDisplayNode(ASDisplayNode *possibleAncestor, ASDisplayNode *possibleDescendent)
+static inline BOOL _ASDisplayNodeIsAncestorOfDisplayNode(ASDisplayNode *possibleAncestor, ASDisplayNode *possibleDescendant)
 {
-  ASDisplayNode *supernode = possibleDescendent;
+  ASDisplayNode *supernode = possibleDescendant;
   while (supernode) {
     if (supernode == possibleAncestor) {
       return YES;

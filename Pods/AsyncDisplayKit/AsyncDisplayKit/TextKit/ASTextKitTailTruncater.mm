@@ -1,14 +1,12 @@
-/*
- *  Copyright (c) 2014-present, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- *
- */
-
-#import "ASAssert.h"
+//
+//  ASTextKitTailTruncater.mm
+//  AsyncDisplayKit
+//
+//  Copyright (c) 2014-present, Facebook, Inc.  All rights reserved.
+//  This source code is licensed under the BSD-style license found in the
+//  LICENSE file in the root directory of this source tree. An additional grant
+//  of patent rights can be found in the PATENTS file in the same directory.
+//
 
 #import "ASTextKitContext.h"
 #import "ASTextKitTailTruncater.h"
@@ -18,23 +16,17 @@
   __weak ASTextKitContext *_context;
   NSAttributedString *_truncationAttributedString;
   NSCharacterSet *_avoidTailTruncationSet;
-  CGSize _constrainedSize;
 }
 @synthesize visibleRanges = _visibleRanges;
-@synthesize truncationStringRect = _truncationStringRect;
 
 - (instancetype)initWithContext:(ASTextKitContext *)context
      truncationAttributedString:(NSAttributedString *)truncationAttributedString
          avoidTailTruncationSet:(NSCharacterSet *)avoidTailTruncationSet
-                constrainedSize:(CGSize)constrainedSize
 {
   if (self = [super init]) {
     _context = context;
     _truncationAttributedString = truncationAttributedString;
     _avoidTailTruncationSet = avoidTailTruncationSet;
-    _constrainedSize = constrainedSize;
-
-    [self _truncate];
   }
   return self;
 }
@@ -62,9 +54,10 @@
                                                                 effectiveRange:NULL];
   NSParagraphStyle *paragraphStyle = [textStorage attributesAtIndex:[layoutManager characterIndexForGlyphAtIndex:lastVisibleGlyphIndex]
                                                      effectiveRange:NULL][NSParagraphStyleAttributeName];
+  
   // We assume LTR so long as the writing direction is not
   BOOL rtlWritingDirection = paragraphStyle ? paragraphStyle.baseWritingDirection == NSWritingDirectionRightToLeft : NO;
-  // We only want to treat the trunction rect as left-aligned in the case that we are right-aligned and our writing
+  // We only want to treat the truncation rect as left-aligned in the case that we are right-aligned and our writing
   // direction is RTL.
   BOOL leftAligned = CGRectGetMinX(lastLineRect) == CGRectGetMinX(lastLineUsedRect) || !rtlWritingDirection;
 
@@ -74,8 +67,9 @@
                                                                       maximumNumberOfLines:1
                                                                             exclusionPaths:nil
                                                                            constrainedSize:constrainedRect.size
-                                                                      layoutManagerFactory:nil];
-
+                                                                      layoutManagerCreationBlock:nil
+                                                                     layoutManagerDelegate:nil
+                                                                  textStorageCreationBlock:nil];
   __block CGRect truncationUsedRect;
 
   [truncationContext performBlockWithLockedTextKitComponents:^(NSLayoutManager *truncationLayoutManager, NSTextStorage *truncationTextStorage, NSTextContainer *truncationTextContainer) {
@@ -154,7 +148,7 @@
   }
 }
 
-- (void)_truncate
+- (void)truncate
 {
   [_context performBlockWithLockedTextKitComponents:^(NSLayoutManager *layoutManager, NSTextStorage *textStorage, NSTextContainer *textContainer) {
     NSUInteger originalStringLength = textStorage.length;
@@ -186,6 +180,16 @@
 
     _visibleRanges = { visibleCharacterRange };
   }];
+}
+
+- (NSRange)firstVisibleRange
+{
+  std::vector<NSRange> visibleRanges = _visibleRanges;
+  if (visibleRanges.size() > 0) {
+    return visibleRanges[0];
+  }
+
+  return NSMakeRange(NSNotFound, 0);
 }
 
 @end

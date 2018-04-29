@@ -1,6 +1,6 @@
 //
 //  TFTableDataSourceManager.h
-//  
+//
 //
 //  Created by Melvin on 6/10/15.
 //
@@ -35,3 +35,4 @@
 @property (nonatomic ,assign) NSInteger                       listType;
 
 @end
+

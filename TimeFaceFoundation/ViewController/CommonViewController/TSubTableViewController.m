@@ -38,18 +38,29 @@
     [super loadView];
     if (_useASKit) {
         _asTableView = [[ASTableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain asyncDataFetching:YES];
-        _tableView.backgroundColor = TFSTYLEVAR(viewBackgroundColor);
-        _asTableView.separatorStyle = UITableViewCellSeparatorStyleNone; // SocialAppNode has its own separator
+        _asTableView.backgroundColor = TFSTYLEVAR(viewBackgroundColor);
+        _asTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        
+        // iOS 适配
+        _asTableView.estimatedRowHeight = 0;
+        _asTableView.estimatedSectionHeaderHeight = 0;
+        _asTableView.estimatedSectionFooterHeight = 0;
+        
+        
         [self.view addSubview:_asTableView];
     }
     else {
         if (!_tableView) {
             _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:_tableViewStyle];
             _tableView.backgroundColor = TFSTYLEVAR(viewBackgroundColor);
-            _tableView.autoresizingMask =  UIViewAutoresizingFlexibleWidth
-            | UIViewAutoresizingFlexibleHeight;
-            [self.view addSubview:_tableView];
             
+            // iOS 11 适配
+            _tableView.estimatedRowHeight = 0;
+            _tableView.estimatedSectionHeaderHeight = 0;
+            _tableView.estimatedSectionFooterHeight = 0;
+            
+            
+            [self.view addSubview:_tableView];
         }
     }
 }
@@ -74,7 +85,22 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.automaticallyAdjustsScrollViewInsets = YES;
+    
+    // iOS 11 适配
+    if (@available(iOS 11.0, *) && self.usePullReload) {
+        _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        if ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
+        {//iPhone X
+            _tableView.contentInset = UIEdgeInsetsMake(88, 0, 0, 0);
+        }
+        else
+        {
+            _tableView.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
+        }
+        _tableView.scrollIndicatorInsets = _tableView.contentInset;
+    } else if (@available(*, iOS 11.0)) {
+        self.automaticallyAdjustsScrollViewInsets = YES;
+    }
     [self createDataSource];
     [JDStatusBarNotification addStyleNamed:@"scrollNotice"
                                    prepare:^JDStatusBarStyle*(JDStatusBarStyle *style)
@@ -89,6 +115,10 @@
 
 - (void)dealloc {
     [self.dataSource stopLoading];
+    if (self.asTableView) {
+        self.asTableView.asyncDataSource = nil;
+        self.asTableView.asyncDelegate = nil;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -119,6 +149,7 @@
                                                  name:kTFReloadCellNotification
                                                object:nil];
     
+    
 }
 
 - (void)autoReload:(NSNotification *)notification {
@@ -144,6 +175,8 @@
 
 
 - (void)reloadData {
+    self.tableView.tableFooterView = [[UIView alloc]init];
+    [self removeStateView];
     [self.dataSource reloadTableViewData:YES];
 }
 
@@ -165,11 +198,11 @@
 
 #pragma mark - TableViewDataSourceDelegate
 
-- (void)actionOnView:(RETableViewItem *)item actionType:(NSInteger)actionType {
+- (void)actionOnView:(id)item actionType:(NSInteger)actionType {
     
 }
 
-- (void)actionItemClick:(RETableViewItem *)item {
+- (void)actionItemClick:(id)item {
     
 }
 
@@ -230,6 +263,10 @@
             [self showStateView:kTFViewStateDataError];
         }
     }
+}
+
+- (void)didFinishLoad:(DataLoadPolicy)loadPolicy object:(id)object error:(NSError *)error {
+    [self didFinishLoad:loadPolicy error:error];
 }
 
 
@@ -299,3 +336,4 @@
  */
 
 @end
+

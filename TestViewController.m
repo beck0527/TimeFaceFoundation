@@ -18,6 +18,10 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    self.view.backgroundColor = [UIColor redColor];
+    
+    [self removeStateView];
+    
 //    NetWorkUrlBlock block = ^(NSString *interface, NSString *url){
 //        if ([interface isEqualToString:@"keyLogin"]) {
 //            url = [NSString stringWithFormat:@"%@%@",@"dsdsd",interface];

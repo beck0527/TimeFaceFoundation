@@ -2,6 +2,7 @@
 
 [![CI Status](http://img.shields.io/travis/jonathantribouharet/JTCalendar.svg)](https://travis-ci.org/jonathantribouharet/JTCalendar)
 ![Version](https://img.shields.io/cocoapods/v/JTCalendar.svg)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 ![License](https://img.shields.io/cocoapods/l/JTCalendar.svg)
 ![Platform](https://img.shields.io/cocoapods/p/JTCalendar.svg)
 
@@ -12,6 +13,12 @@ JTCalendar is an easily customizable calendar control for iOS.
 With [CocoaPods](http://cocoapods.org), add this line to your Podfile.
 
     pod 'JTCalendar', '~> 2.0'
+
+### Carthage
+
+To use this project with [Carthage](https://github.com/Carthage/Carthage), add this line to your Cartfile.
+
+    github "jonathantribouharet/JTCalendar" ~> 2.2
 
 ## Screenshots
 
@@ -24,7 +31,7 @@ The part below the calendar in the 2nd screenshot is not provided.
 
 ## Features
 
-- horizontal and verical calendar
+- horizontal and vertical calendar
 - highly customizable either by subclassing default class provided or by creating your own class implementing a protocol
 - support internationalization
 - week view mode
@@ -126,7 +133,7 @@ Even if all methods of `JTCalendarManager` are optional you won't get far withou
 }
 ```
 
-- `calendar:didTouchDayView:` this method is used to respond to a touch on a dayView. For exemple you can indicate to display another month if dayView is from another month.
+- `calendar:didTouchDayView:` this method is used to respond to a touch on a dayView. For example you can indicate to display another month if dayView is from another month.
 
 ```objective-c
 - (void)calendar:(JTCalendarManager *)calendar didTouchDayView:(JTCalendarDayView *)dayView
@@ -230,7 +237,7 @@ If you use `JTVerticalCalendarView` for having a vertical calendar, you have som
 }
 ```
 
-### Internationalization / Localization
+### Internationalization / Localization (change first weekday)
 
 For changing the locale and the timeZone just do:
 
@@ -239,10 +246,17 @@ _calendarManager.dateHelper.calendar.timeZone = [NSTimeZone timeZoneWithAbbrevia
 _calendarManager.dateHelper.calendar.locale = [NSLocale localeWithLocaleIdentifier:@"fr_FR"];
 [_calendarManager reload];
 ```
+For changing locale and timeZone in Swift use:
+
+```swift
+let locale = Locale(identifier: "fr_FR")
+let timeZone = TimeZone.init(abbreviation: "CDT")
+calendarManager = JTCalendarManager(locale: locale, andTimeZone: timeZone)
+```
 
 ### Date comparaison
 
-Be careful when you compare two different dates, you have to take care of the tme zone.
+Be careful when you compare two different dates, you have to take care of the time zone.
 An helper is provided for some basic operations:
 
 ```objective-c
@@ -266,6 +280,14 @@ You have to cache the data from the next pages and update this cache asynchronou
 
 Before asking any questions be sure to explore the Example project.
 Check also [JTCalendarDelegate](JTCalendar/JTCalendarDelegate.h) and [JTCalendarSettings](JTCalendar/JTCalendarSettings.h) files.
+
+Don't use `NSLog` to print date use a `NSDateFormatter`, `NSLog`doesn't take care of the timezone.
+
+```objective-c
+NSDateFormatter *dateFormatter = [_calendarManager.dateHelper createDateFormatter];
+dateFormatter.dateFormat = @"yyyy'-'MM'-'dd' 'HH':'mm':'ss";
+NSLog(@"%@", [dateFormatter stringFromDate:yourDate]);
+```
 
 ## Requirements
 

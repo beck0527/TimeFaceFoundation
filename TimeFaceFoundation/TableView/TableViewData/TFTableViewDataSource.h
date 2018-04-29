@@ -14,6 +14,10 @@
 
 typedef NS_ENUM(NSInteger, DataLoadPolicy) {
     /**
+     *  第一次加载
+     */
+    DataLoadPolicyFirstLoad = -1,
+    /**
      *  正常加载
      */
     DataLoadPolicyNone      = 0,
@@ -43,6 +47,8 @@ typedef NS_ENUM(NSInteger, DataLoadPolicy) {
 
 - (void)didFinishLoad:(DataLoadPolicy)loadPolicy error:(NSError *)error;
 
+- (void)didFinishLoad:(DataLoadPolicy)loadPolicy object:(id)object error:(NSError *)error;
+
 @optional
 - (BOOL)showPullRefresh;
 
@@ -52,7 +58,13 @@ typedef NS_ENUM(NSInteger, DataLoadPolicy) {
 
 - (void)tableViewExpandData:(id)expandData success:(BOOL)success;
 
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView;
+
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView;
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView;
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate;
 
 - (void)scrollViewDidScrollUp:(CGFloat)deltaY;
 
@@ -81,7 +93,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath;
  *  列表代理
  */
 @property (nonatomic ,weak  ) id<TFTableViewDataSourceDelegate> delegate;
-@property (nonatomic ,weak  ) id<MYTableViewManagerDelegate> mDelegate;
 /**
  *  tableview
  */
@@ -110,6 +121,23 @@ forRowAtIndexPath:(NSIndexPath *)indexPath;
  *  列表类型
  */
 @property (nonatomic ,assign) NSInteger                     listType;
+@property (nonatomic ,assign) BOOL                          useCacheData;
+/**
+ *  正在加载
+ */
+@property (nonatomic ,assign) BOOL                           loading;
+/**
+ *  网络数据加载完成
+ */
+@property (nonatomic ,assign) BOOL                           finished;
+/**
+ *  总页数
+ */
+@property (nonatomic ,assign) NSUInteger                     totalPage;
+/**
+ *  当前页码
+ */
+@property (nonatomic ,assign) NSUInteger                     currentPage;
 
 - (id)initWithTableView:(UITableView *)tableView
                listType:(NSInteger)listType
@@ -117,7 +145,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath;
 
 - (id)initWithASTableView:(ASTableView *)tableView
                  listType:(NSInteger)listType
-                 delegate:(id /*<MYTableViewManagerDelegate>*/)delegate;
+                 delegate:(id /*<TFTableViewDataSourceDelegate>*/)delegate;
 /**
  *  刷新列表数据
  *
@@ -159,3 +187,4 @@ forRowAtIndexPath:(NSIndexPath *)indexPath;
 - (void)stopPullRefresh;
 
 @end
+

@@ -1,9 +1,12 @@
 {
   "name": "MYTableViewManager",
-  "version": "0.0.1",
+  "version": "0.1.5",
   "summary": "TableView 管理器",
-  "homepage": "https://github.com/melvin7/MYTableViewManager",
-  "license": "Copyright (C) 2015 TimeFace, Inc.  All rights reserved.",
+  "homepage": "https://github.com/TimeFaceCoder/MYTableViewManager",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
   "authors": {
     "Melvin": "yangmin@timeface.cn"
   },
@@ -12,7 +15,7 @@
     "ios": "7.0"
   },
   "source": {
-    "git": "https://github.com/melvin7/MYTableViewManager.git"
+    "git": "https://github.com/TimeFaceCoder/MYTableViewManager.git"
   },
   "source_files": "MYTableViewManager/MYTableViewManager/**/*.{h,m,c}",
   "requires_arc": true,
@@ -21,10 +24,7 @@
 
     ],
     "AsyncDisplayKit": [
-
-    ],
-    "YYKit": [
-
+      "~> 1.9.81"
     ]
   }
 }
