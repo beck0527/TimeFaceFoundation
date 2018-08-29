@@ -27,6 +27,9 @@
 #import <MYTableViewManager/MYTableViewLoadingItemCell.h>
 
 
+#import "MJRefresh.h"
+
+
 @interface TFTableViewDataSource()<RETableViewManagerDelegate,MYTableViewManagerDelegate> {
     
 }
@@ -82,7 +85,7 @@ const static NSInteger kPageSize = 30;
                delegate:(id /**<>*/)delegate {
     self = [super init];
     if (!self)
-    return nil;
+        return nil;
     //列表管理器
     _delegate  = delegate;
     _listType  = listType;
@@ -101,7 +104,7 @@ const static NSInteger kPageSize = 30;
                  delegate:(id /**<>*/)delegate {
     self = [super init];
     if (!self)
-    return nil;
+        return nil;
     //列表管理器
     _managerFlag = YES;
     _delegate    = delegate;
@@ -137,27 +140,41 @@ const static NSInteger kPageSize = 30;
 }
 
 - (void)addPullRefresh {
-    __weak typeof(self) weakSelf =self;
-    NSMutableArray *progress =[NSMutableArray array];
-    for (int i=1;i<=10;i++)
-    {
-        NSString *fname = [NSString stringWithFormat:@"Loading%02d",i];
-        [progress addObject:[UIImage imageNamed:fname]];
-    }
+    //    __weak typeof(self) weakSelf =self;
+    //    NSMutableArray *progress =[NSMutableArray array];
+    //    for (int i=1;i<=10;i++)
+    //    {
+    //        NSString *fname = [NSString stringWithFormat:@"Loading%02d",i];
+    //        [progress addObject:[UIImage imageNamed:fname]];
+    //    }
+    //
+    //    [self.tableView addPullToRefreshActionHandler:^{
+    //        typeof(self) strongSelf = weakSelf;
+    //        [strongSelf load:DataLoadPolicyReload params:self->_params];
+    //
+    //    }
+    //                                   ProgressImages:progress
+    //                                    LoadingImages:progress
+    //                          ProgressScrollThreshold:60
+    //                           LoadingImagesFrameRate:60];
     
-    [self.tableView addPullToRefreshActionHandler:^{
-        typeof(self) strongSelf = weakSelf;
-        [strongSelf load:DataLoadPolicyReload params:self->_params];
-        
-    }
-                                   ProgressImages:progress
-                                    LoadingImages:progress
-                          ProgressScrollThreshold:60
-                           LoadingImagesFrameRate:60];
+    MJRefreshNormalHeader *header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
+    // 设置自动切换透明度(在导航栏下面自动隐藏)
+    header.automaticallyChangeAlpha = YES;
+    // 隐藏时间
+    header.lastUpdatedTimeLabel.hidden = YES;
+    // 设置header
+    self.tableView.mj_header = header;
+}
+
+- (void)loadNewData
+{
+    [self load:DataLoadPolicyReload params:self->_params];
 }
 
 - (void)stopPullRefresh {
-    [self.tableView stopPullToRefreshAnimation];
+    //[self.tableView stopPullToRefreshAnimation];
+    [self.tableView.mj_header endRefreshing];
 }
 
 
@@ -166,7 +183,8 @@ const static NSInteger kPageSize = 30;
         pullToRefresh = [self.delegate showPullRefresh];
     }
     if (pullToRefresh) {
-        [self.tableView triggerPullToRefresh];
+        //triggerPullToRefresh
+        [self.tableView.mj_header beginRefreshing];
     }
     else {
         [self load:DataLoadPolicyReload params:_params];
@@ -179,7 +197,8 @@ const static NSInteger kPageSize = 30;
     }
     if (pullToRefresh) {
         _params = [NSMutableDictionary dictionaryWithDictionary:params];
-        [self.tableView triggerPullToRefresh];
+        //[self.tableView triggerPullToRefresh];
+        [self.tableView.mj_header beginRefreshing];
     }
     else {
         //第一次从缓存中加载
@@ -262,13 +281,12 @@ const static NSInteger kPageSize = 30;
                                     withRowAnimation:UITableViewRowAnimationFade];
                 [strongSelf.tableView endUpdates];
             }
-            
-            
         }
         
         if (!result && dataLoadPolicy == DataLoadPolicyCache) {
             //缓存数据为空，触发下拉刷新操作
-            [strongSelf.tableView triggerPullToRefresh];
+            //[strongSelf.tableView triggerPullToRefresh];
+            [self.tableView.mj_header beginRefreshing];
             return;
         }
         
@@ -338,21 +356,22 @@ const static NSInteger kPageSize = 30;
                          [strongSelf stopPullRefresh];
                      }
                      switch (dataLoadPolicy) {
-                             case DataLoadPolicyNone:
+                         case DataLoadPolicyNone:
                              break;
-                             case DataLoadPolicyCache:
+                         case DataLoadPolicyCache:
                              //开始下拉刷新
-                             //                             [strongSelf.tableView triggerPullToRefresh];
+                             //[strongSelf.tableView triggerPullToRefresh];
+                             //[self.tableView.mj_header beginRefreshing];
                              break;
-                             case DataLoadPolicyMore:{
-                                 if (strongSelf->_managerFlag) {
-                                     if (context) {
-                                         [context completeBatchFetching:YES];
-                                     }
+                         case DataLoadPolicyMore:{
+                             if (strongSelf->_managerFlag) {
+                                 if (context) {
+                                     [context completeBatchFetching:YES];
                                  }
                              }
+                         }
                              break;
-                             case DataLoadPolicyReload:
+                         case DataLoadPolicyReload:
                              //结束下拉刷新动画
                              //                             if(strongSelf.delegate && [strongSelf.delegate respondsToSelector:@selector(stopPullRefresh)]){
                              //                                 [strongSelf.delegate stopPullRefresh];
@@ -514,7 +533,8 @@ const static NSInteger kPageSize = 30;
 
 - (void)stopLoading {
     if (_listType || [self.delegate showPullRefresh]) {
-        [self.tableView stopPullToRefreshAnimation];
+        //[self.tableView stopPullToRefreshAnimation];
+        [self.tableView.mj_header endRefreshing];
     }
 }
 
@@ -679,4 +699,5 @@ forRowAtIndexPath:(NSIndexPath *)indexPath; {
 }
 
 @end
+
 

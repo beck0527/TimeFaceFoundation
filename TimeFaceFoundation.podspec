@@ -29,4 +29,5 @@ Pod::Spec.new do |s|
   s.dependency 'Masonry'
   s.dependency 'SVProgressHUD'
   s.dependency 'FMDB'
+  s.dependency 'MJRefresh'
 end
