@@ -20,8 +20,9 @@ typedef void (^NetWorkProgressBlock)(double percentDone,long totalBytesWritten);
 
 typedef NSString* (^NetWorkUrlBlock)(NSString *interface) ;
 
-typedef void (^NetWorkErrorCodeBlock)(NSInteger errorCode);
+typedef NSDictionary* (^NetWorkHeadBlock)(NSString *interface) ;
 
+typedef void (^NetWorkErrorCodeBlock)(NSInteger errorCode);
 
 @interface NetworkAssistant : NSObject
 
@@ -33,6 +34,8 @@ typedef void (^NetWorkErrorCodeBlock)(NSInteger errorCode);
  */
 @property (nonatomic, copy) NSDictionary *headerDic;
 @property (nonatomic, strong) NetWorkErrorCodeBlock errorCodeBlock;
+
+@property (nonatomic, strong) NetWorkHeadBlock headBlock;
 
 @property (nonatomic, strong) NetWorkUrlBlock urlBlock;
 

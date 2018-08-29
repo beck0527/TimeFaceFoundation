@@ -202,12 +202,17 @@
     if (hud.length) {
         [SVProgressHUD showWithStatus:hud];
     }
+    
+    if(_headBlock)
+    {
+        _headerDic = _headBlock(url);
+    }
+    
     if (![url hasPrefix:@"http"]) {
         if (_urlBlock) {
             url = _urlBlock(url);
         }
     }
-    
     
     NSString *cacheKey = [[TFCoreUtility sharedUtility] getMD5StringFromNSString:[url stringByAppendingString:params?[params description]:@""]];
     TFLog(@"cacheKey:%@",cacheKey);
