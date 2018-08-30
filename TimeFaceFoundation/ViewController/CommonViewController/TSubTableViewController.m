@@ -14,56 +14,56 @@
 @interface TSubTableViewController (){
     CGFloat lastPosition;
 }
-
-@property (nonatomic ,strong ,readwrite) UITableView           *tableView;
-@property (nonatomic ,strong ,readwrite) TFTableViewDataSource *dataSource;
-
-@end
+    
+    @property (nonatomic ,strong ,readwrite) UITableView           *tableView;
+    @property (nonatomic ,strong ,readwrite) TFTableViewDataSource *dataSource;
+    
+    @end
 
 @implementation TSubTableViewController
-
+    
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-        self.tableViewStyle = UITableViewStylePlain;
-        self.usePullReload = YES;
+    {
+        self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+        if (self) {
+            // Custom initialization
+            self.tableViewStyle = UITableViewStylePlain;
+            self.usePullReload = YES;
+        }
+        return self;
     }
-    return self;
-}
-
+    
 - (void)loadView {
     [super loadView];
-   
-        if (!_tableView) {
-            _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:_tableViewStyle];
-            _tableView.backgroundColor = TFSTYLEVAR(viewBackgroundColor);
-            
-            // iOS 11 适配
-            _tableView.estimatedRowHeight = 0;
-            _tableView.estimatedSectionHeaderHeight = 0;
-            _tableView.estimatedSectionFooterHeight = 0;
-            
-            
-            [self.view addSubview:_tableView];
-        }
+    
+    if (!_tableView) {
+        _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:_tableViewStyle];
+        _tableView.backgroundColor = TFSTYLEVAR(viewBackgroundColor);
+        
+        // iOS 11 适配
+        _tableView.estimatedRowHeight = 0;
+        _tableView.estimatedSectionHeaderHeight = 0;
+        _tableView.estimatedSectionFooterHeight = 0;
+        
+        
+        [self.view addSubview:_tableView];
+    }
     
 }
 - (void)viewWillLayoutSubviews {
-
+    
 }
 - (void)createDataSource {
     if (self.params && [self.params objectForKey:@"listType"]) {
         [self setListType:[[self.params objectForKey:@"listType"] intValue]];
     }
-
-        self.dataSource = [[TFTableViewDataSource alloc] initWithTableView:self.tableView
-                                                                  listType:self.listType
-                                                                  delegate:self];
+    
+    self.dataSource = [[TFTableViewDataSource alloc] initWithTableView:self.tableView
+                                                              listType:self.listType
+                                                              delegate:self];
     
 }
-
+    
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -92,12 +92,12 @@
          return style;
      }];
 }
-
-
+    
+    
 - (void)dealloc {
     [self.dataSource stopLoading];
 }
-
+    
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     if (animated) {
@@ -128,35 +128,35 @@
     
     
 }
-
+    
 - (void)autoReload:(NSNotification *)notification {
     _loaded = NO;
     [self startLoadData];
 }
-
+    
 - (void)scrollTableViewToSearchBarAnimated:(BOOL)animated {
     NSAssert(YES, @"This method should be handled by a subclass!");
 }
-
+    
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
+    
 - (void)startLoadData {
     if (!_loaded) {
         [self.dataSource startLoading:NO params:self.requestParams];
         _loaded = YES;
     }
 }
-
-
+    
+    
 - (void)reloadData {
     self.tableView.tableFooterView = [[UIView alloc]init];
     [self removeStateView];
     [self.dataSource reloadTableViewData:YES];
 }
-
+    
 - (void)reloadCell:(NSNotification *)notification {
     NSDictionary *userInfo = [notification userInfo];
     if (userInfo) {
@@ -172,32 +172,32 @@
 - (void)onRightNavClick:(id)sender {
     
 }
-
+    
 #pragma mark - TableViewDataSourceDelegate
-
+    
 - (void)actionOnView:(id)item actionType:(NSInteger)actionType {
     
 }
-
+    
 - (void)actionItemClick:(id)item {
     
 }
-
+    
 - (BOOL)showPullRefresh {
     return _usePullReload;
 }
-
-
+    
+    
 - (void)didStartLoad {
     TFLog(@"%s",__func__);
     [self showStateView:kTFViewStateLoading];
 }
-
-
+    
+    
 - (CGPoint)offsetForStateView:(UIView *)view {
     return CGPointMake(0, 0);
 }
-
+    
 - (void)didFinishLoad:(DataLoadPolicy)loadPolicy error:(NSError *)error {
     TFLog(@"%s",__func__);
     if (!error) {
@@ -241,12 +241,12 @@
         }
     }
 }
-
+    
 - (void)didFinishLoad:(DataLoadPolicy)loadPolicy object:(id)object error:(NSError *)error {
+    //父类先实现didFinishLoad:error:  子类实现didFinishLoad:object:error:  先调用super
     [self didFinishLoad:loadPolicy error:error];
 }
-
-
+    
 - (void)scrollViewDidScroll:(UITableView *)tableView {
     
     CGFloat currentPostion = tableView.contentOffset.y;
@@ -268,49 +268,40 @@
     }
 }
 - (void)scrollViewDidScrollUp:(CGFloat)deltaY
-{
-    [self moveToolbar:-deltaY animated:YES];
-}
-
+    {
+        [self moveToolbar:-deltaY animated:YES];
+    }
+    
 - (void)scrollViewDidScrollDown:(CGFloat)deltaY
-{
-    [self moveToolbar:-deltaY animated:YES];
-}
-
+    {
+        [self moveToolbar:-deltaY animated:YES];
+    }
+    
 - (void)scrollFullScreenScrollViewDidEndDraggingScrollUp
-{
-    [self hideToolbar:YES];
-}
-
+    {
+        [self hideToolbar:YES];
+    }
+    
 - (void)scrollFullScreenScrollViewDidEndDraggingScrollDown
-{
-    [self showToolbar:YES];
-}
-
+    {
+        [self showToolbar:YES];
+    }
+    
 #pragma mark - Search Delegate
-
+    
 - (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller {
     
 }
-
+    
 - (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller {
     
 }
-
+    
 - (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
 {
     return NO;
 }
-
-/*
- #pragma mark - Navigation
- 
- // In a storyboard-based application, you will often want to do a little preparation before navigation
- - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
- // Get the new view controller using [segue destinationViewController].
- // Pass the selected object to the new view controller.
- }
- */
-
+    
 @end
+
 
