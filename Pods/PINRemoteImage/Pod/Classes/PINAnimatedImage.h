@@ -50,6 +50,7 @@ typedef NS_ENUM(NSUInteger, PINAnimatedImageStatus) {
   PINAnimatedImageStatusError,
 };
 
+extern const size_t kPINAnimatedImageComponentsPerPixel;
 extern const Float32 kPINAnimatedImageDefaultDuration;
 extern const Float32 kPINAnimatedImageMinimumDuration;
 extern const NSTimeInterval kPINAnimatedImageDisplayRefreshRate;

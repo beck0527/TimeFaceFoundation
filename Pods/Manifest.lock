@@ -15,15 +15,6 @@ PODS:
   - AFNetworking/Serialization (3.2.0)
   - AFNetworking/UIKit (3.2.0):
     - AFNetworking/NSURLSession
-  - AsyncDisplayKit (1.9.92):
-    - AsyncDisplayKit/PINRemoteImage (= 1.9.92)
-  - AsyncDisplayKit/ASDealloc2MainObject (1.9.92)
-  - AsyncDisplayKit/Core (1.9.92):
-    - AsyncDisplayKit/ASDealloc2MainObject
-  - AsyncDisplayKit/PINRemoteImage (1.9.92):
-    - AsyncDisplayKit/Core
-    - PINCache (= 3.0.1-beta)
-    - PINRemoteImage/iOS (= 3.0.0-beta.3)
   - DateTools (2.0.0)
   - EGOCache (2.2.0)
   - FLAnimatedImage (1.0.12)
@@ -38,23 +29,18 @@ PODS:
   - JTCalendar (2.2.2)
   - Masonry (1.1.0)
   - MJRefresh (3.1.15.3)
-  - MYTableViewManager (0.1.5):
-    - AsyncDisplayKit (~> 1.9.81)
-    - pop
   - NJKWebViewProgress (0.2.3):
     - NJKWebViewProgress/Core (= 0.2.3)
     - NJKWebViewProgress/ProgressView (= 0.2.3)
   - NJKWebViewProgress/Core (0.2.3)
   - NJKWebViewProgress/ProgressView (0.2.3)
-  - PINCache (3.0.1-beta)
-  - PINRemoteImage (3.0.0-beta.3):
-    - PINRemoteImage/FLAnimatedImage (= 3.0.0-beta.3)
-  - PINRemoteImage/Core (3.0.0-beta.3):
-    - PINCache (>= 3.0.0-beta)
-  - PINRemoteImage/FLAnimatedImage (3.0.0-beta.3):
+  - PINCache (2.3)
+  - PINRemoteImage (3.0.0-beta.2):
+    - PINRemoteImage/FLAnimatedImage (= 3.0.0-beta.2)
+  - PINRemoteImage/Core (3.0.0-beta.2):
+    - PINCache (>= 2.1)
+  - PINRemoteImage/FLAnimatedImage (3.0.0-beta.2):
     - FLAnimatedImage (>= 1.0)
-    - PINRemoteImage/Core
-  - PINRemoteImage/iOS (3.0.0-beta.3):
     - PINRemoteImage/Core
   - pop (1.0.10)
   - REFormattedNumberField (1.1.6)
@@ -82,9 +68,8 @@ DEPENDENCIES:
   - JTCalendar
   - Masonry
   - MJRefresh
-  - MYTableViewManager (from `https://github.com/beck0527/MYTableViewManager.git`)
   - NJKWebViewProgress
-  - PINRemoteImage
+  - PINRemoteImage (= 3.0.0-beta.2)
   - pop
   - RETableViewManager
   - SDWebImage
@@ -92,10 +77,9 @@ DEPENDENCIES:
   - SVProgressHUD
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - ActionSheetPicker-3.0
     - AFNetworking
-    - AsyncDisplayKit
     - DateTools
     - EGOCache
     - FLAnimatedImage
@@ -119,19 +103,9 @@ SPEC REPOS:
     - SSKeychain
     - SVProgressHUD
 
-EXTERNAL SOURCES:
-  MYTableViewManager:
-    :git: https://github.com/beck0527/MYTableViewManager.git
-
-CHECKOUT OPTIONS:
-  MYTableViewManager:
-    :commit: f26336974c44569f4c664eebf8c98ab6e8bf50cc
-    :git: https://github.com/beck0527/MYTableViewManager.git
-
 SPEC CHECKSUMS:
   ActionSheetPicker-3.0: eef157d75e151f255c5333d26656c7fbfe905a51
   AFNetworking: 8ac6017b94ea105479f7776e5288e48ae9c59bb4
-  AsyncDisplayKit: 49d94f5739669d666ff7cdc3430f43f0b2cfbeaf
   DateTools: 933ac9c490f21f92127cf690ccd8c397e0126caf
   EGOCache: 191fd213da6804d487b49b1a91772ba904f3e324
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
@@ -144,10 +118,9 @@ SPEC CHECKSUMS:
   JTCalendar: 20610270b29b309bab398f06fc9e2f1aed67a22c
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: b48380ae2b927b46c4ef000de9adb8dc748e1df7
-  MYTableViewManager: bf47958c02819047163888aa37ffea168249fc2b
   NJKWebViewProgress: f481fd424cb5ecc27eacae11b5397db92fba9a4d
-  PINCache: 6911fe422a633e18b3d3ddf2bd4f0e55e36e2892
-  PINRemoteImage: 308731aa6534500e58fc211b9cc2bb7252df25ba
+  PINCache: ce36ed282031b92fc7733ffe831f474ff80fddc2
+  PINRemoteImage: 197554c5ba57a6ae90f5db441651180039fc9062
   pop: 82ca6b068ce9278fd350fd9dd09482a0ce9492e6
   REFormattedNumberField: 70fc5fb1218ebd5ee9983820defd12806d5c6ec6
   RETableViewManager: 0f24d796c42c0890d38c79cc9aeb3871e186726e
@@ -156,6 +129,6 @@ SPEC CHECKSUMS:
   SSKeychain: 55cc80f66f5c73da827e3077f02e43528897db41
   SVProgressHUD: c404a55d78acbeb7ebb78b76d3faf986475a6994
 
-PODFILE CHECKSUM: e444b975d752f43212cf5fd175673b82117b61ba
+PODFILE CHECKSUM: ae3529eacefb89efb03b7e74318a9fb68a3585c5
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.3

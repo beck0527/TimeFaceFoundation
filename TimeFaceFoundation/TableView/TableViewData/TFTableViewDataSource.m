@@ -23,14 +23,10 @@
 #import "NetworkAssistant.h"
 #import "TimeFaceFoundationConst.h"
 
-#import <MYTableViewManager/MYTableViewLoadingItem.h>
-#import <MYTableViewManager/MYTableViewLoadingItemCell.h>
-
-
 #import "MJRefresh.h"
 
 
-@interface TFTableViewDataSource()<RETableViewManagerDelegate,MYTableViewManagerDelegate> {
+@interface TFTableViewDataSource()<RETableViewManagerDelegate> {
     
 }
 
@@ -64,10 +60,6 @@
  *  当前列表缓存key
  */
 @property (nonatomic ,copy) NSString                       *cacheKey;
-/**
- *  YES 使用 MYTableViewManager
- */
-@property (nonatomic ,assign) BOOL managerFlag;
 
 @property (nonatomic ,assign) BOOL buildingView;
 
@@ -96,27 +88,6 @@ const static NSInteger kPageSize = 30;
     [self setupDataSource];
     return self;
 }
-
-
-
-- (id)initWithASTableView:(ASTableView *)tableView
-                 listType:(NSInteger)listType
-                 delegate:(id /**<>*/)delegate {
-    self = [super init];
-    if (!self)
-        return nil;
-    //列表管理器
-    _managerFlag = YES;
-    _delegate    = delegate;
-    _listType    = listType;
-    _tableView   = tableView;
-    _mManager = [[MYTableViewManager alloc] initWithTableView:tableView
-                                                     delegate:self];
-    //列表模式
-    [self setupDataSource];
-    return self;
-}
-
 
 /**
  *  初始化方法
@@ -224,7 +195,7 @@ const static NSInteger kPageSize = 30;
  *  @param loadPolicy loadPolicy
  *  @param params params
  */
-- (void)load:(DataLoadPolicy)loadPolicy params:(NSDictionary *)params context:(ASBatchContext *)context {
+- (void)load:(DataLoadPolicy)loadPolicy params:(NSDictionary *)params context:(NSObject *)context {
     TFLog(@"------------------------------load _loading = %@ dataLoadPolicy = %@",@(_loading),@(loadPolicy));
     if (_loading) {
         return;
@@ -265,16 +236,11 @@ const static NSInteger kPageSize = 30;
             dataLoadPolicy == DataLoadPolicyNone) {
             
             NSInteger sectionCount = 0;
-            if (strongSelf->_managerFlag) {
-                sectionCount = strongSelf.mManager.sections.count;
-                [strongSelf.mManager removeAllSections];
+       
+            sectionCount = strongSelf.manager.sections.count;
+            [strongSelf.manager removeAllSections];
                 
-            }
-            else {
-                sectionCount = strongSelf.manager.sections.count;
-                [strongSelf.manager removeAllSections];
-                
-            }
+            
             if (sectionCount > 0) {
                 [strongSelf.tableView beginUpdates];
                 [strongSelf.tableView deleteSections:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, sectionCount)]
@@ -298,14 +264,9 @@ const static NSInteger kPageSize = 30;
         if (dataLoadPolicy == DataLoadPolicyMore) {
             //来自加载下一页,移除loading item
             NSInteger lastSectionIndex = 0;
-            if (strongSelf->_managerFlag) {
-                lastSectionIndex = [[strongSelf.mManager sections] count] - 1;
-                [strongSelf.mManager removeLastSection];
-            }
-            else {
-                lastSectionIndex = [[strongSelf.manager sections] count] - 1;
-                [strongSelf.manager removeLastSection];
-            }
+           
+            lastSectionIndex = [[strongSelf.manager sections] count] - 1;
+            [strongSelf.manager removeLastSection];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [strongSelf.tableView deleteSections:[NSIndexSet indexSetWithIndex:lastSectionIndex]
@@ -325,23 +286,15 @@ const static NSInteger kPageSize = 30;
                      //                     _loading = NO;
                      if (strongSelf->_currentPage < strongSelf->_totalPage) {
                          NSInteger sectionCount = 0;
-                         if (strongSelf->_managerFlag) {
-                             sectionCount = [strongSelf.mManager.sections count];
-                         }
-                         else {
-                             sectionCount = [strongSelf.manager.sections count];
-                         }
+                       
+                         sectionCount = [strongSelf.manager.sections count];
                          
-                         if (strongSelf->_managerFlag) {
-                             MYTableViewSection *section = [MYTableViewSection section];
-                             [section addItem:[MYTableViewLoadingItem itemWithTitle:NSLocalizedString(@"正在加载...", nil)]];
-                             [strongSelf.mManager addSection:section];
-                         }
-                         else {
+                         
+                        
                              RETableViewSection *section = [RETableViewSection section];
                              [section addItem:[TableViewLoadingItem itemWithTitle:NSLocalizedString(@"正在加载...", nil)]];
                              [strongSelf.manager addSection:section];
-                         }
+                         
                          [strongSelf.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionCount]
                                              withRowAnimation:UITableViewRowAnimationFade];
                      }
@@ -364,11 +317,7 @@ const static NSInteger kPageSize = 30;
                              //[self.tableView.mj_header beginRefreshing];
                              break;
                          case DataLoadPolicyMore:{
-                             if (strongSelf->_managerFlag) {
-                                 if (context) {
-                                     [context completeBatchFetching:YES];
-                                 }
-                             }
+                           
                          }
                              break;
                          case DataLoadPolicyReload:
@@ -417,8 +366,6 @@ const static NSInteger kPageSize = 30;
     _tableView = nil;
     _manager = nil;
     
-    _mManager.delegate = nil;
-    _mManager = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -429,15 +376,7 @@ const static NSInteger kPageSize = 30;
 }
 
 - (id)tableViewItemByIndexPath:(NSIndexPath *)indexPath {
-    if (_managerFlag) {
-        MYTableViewSection *section = [[self.mManager sections] objectAtIndex:indexPath.section];
-        if (section && [[section items] count] > 0) {
-            MYTableViewItem *item = (MYTableViewItem *)[[section items] objectAtIndex:indexPath.row];
-            if (item) {
-                return item;
-            }        }
-    }
-    else {
+    
         RETableViewSection * section = [[self.manager sections] objectAtIndex:indexPath.section];
         if (section && [[section items] count] > 0) {
             RETableViewItem *item = (RETableViewItem *)[[section items] objectAtIndex:indexPath.row];
@@ -445,7 +384,7 @@ const static NSInteger kPageSize = 30;
                 return item;
             }
         }
-    }
+    
     return nil;
 }
 #pragma mark - Private
@@ -455,17 +394,12 @@ const static NSInteger kPageSize = 30;
  */
 - (void)registerClass {
     NSArray *tableViewItemlist = [CLClassList subclassesOfClass:[TFTableViewItem class]];
-    if (_managerFlag) {
-        tableViewItemlist = [CLClassList subclassesOfClass:[MYTableViewItem class]];
-    }
+
     for (Class itemClass in tableViewItemlist) {
         NSString *itemName = NSStringFromClass(itemClass);
-        if (_managerFlag) {
-            self.mManager[itemName] = [itemName stringByAppendingString:@"Cell"];
-        }
-        else {
+        
             self.manager[itemName]   = [itemName stringByAppendingString:@"Cell"];
-        }
+        
     }
 }
 
@@ -501,34 +435,6 @@ const static NSInteger kPageSize = 30;
     }
 }
 
-#pragma mark - Delegate
-
-#pragma mark - MYTableViewManagerDelegate
-/**
- *  列表是否需要加载更多数据
- *
- *  @param tableView tableView
- */
-- (BOOL)shouldBatchFetchForTableView:(ASTableView *)tableView {
-    TFLog(@"shouldBatchFetchForTableView");
-    return _currentPage < _totalPage;
-}
-/**
- *  列表开始加载更多数据
- *
- *  @param tableView tableView
- *  @param context context
- */
-- (void)tableView:(ASTableView *)tableView willBeginBatchFetchWithContext:(ASBatchContext *)context {
-    TFLog(@"willBeginBatchFetchWithContext");
-    [self load:DataLoadPolicyMore params:_params context:context];
-}
-
-- (void)my_tableView:(UITableView *)tableView willLoadCell:(MYTableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([cell isKindOfClass:[MYTableViewLoadingItemCell class]]) {
-        //        [self performSelector:@selector(loadMore) withObject:nil afterDelay:0.3];
-    }
-}
 #pragma mark - UIScrollViewDelegate
 
 - (void)stopLoading {

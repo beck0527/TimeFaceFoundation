@@ -16,7 +16,6 @@
 }
 
 @property (nonatomic ,strong ,readwrite) UITableView           *tableView;
-@property (nonatomic ,strong ,readwrite) ASTableView           *asTableView;
 @property (nonatomic ,strong ,readwrite) TFTableViewDataSource *dataSource;
 
 @end
@@ -36,20 +35,7 @@
 
 - (void)loadView {
     [super loadView];
-    if (_useASKit) {
-        _asTableView = [[ASTableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain asyncDataFetching:YES];
-        _asTableView.backgroundColor = TFSTYLEVAR(viewBackgroundColor);
-        _asTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        
-        // iOS 适配
-        _asTableView.estimatedRowHeight = 0;
-        _asTableView.estimatedSectionHeaderHeight = 0;
-        _asTableView.estimatedSectionFooterHeight = 0;
-        
-        
-        [self.view addSubview:_asTableView];
-    }
-    else {
+   
         if (!_tableView) {
             _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:_tableViewStyle];
             _tableView.backgroundColor = TFSTYLEVAR(viewBackgroundColor);
@@ -62,25 +48,20 @@
             
             [self.view addSubview:_tableView];
         }
-    }
+    
 }
 - (void)viewWillLayoutSubviews {
-    _asTableView.frame = self.view.bounds;
+
 }
 - (void)createDataSource {
     if (self.params && [self.params objectForKey:@"listType"]) {
         [self setListType:[[self.params objectForKey:@"listType"] intValue]];
     }
-    if (_useASKit) {
-        self.dataSource = [[TFTableViewDataSource alloc] initWithASTableView:self.asTableView
-                                                                    listType:self.listType
-                                                                    delegate:self];
-    }
-    else {
+
         self.dataSource = [[TFTableViewDataSource alloc] initWithTableView:self.tableView
                                                                   listType:self.listType
                                                                   delegate:self];
-    }
+    
 }
 
 - (void)viewDidLoad {
@@ -115,10 +96,6 @@
 
 - (void)dealloc {
     [self.dataSource stopLoading];
-    if (self.asTableView) {
-        self.asTableView.asyncDataSource = nil;
-        self.asTableView.asyncDelegate = nil;
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {

@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <RETableViewManager/RETableViewManager.h>
-#import <MYTableViewManager/MYTableViewManager.h>
 
 @class TFTableViewDataManager;
 
@@ -101,7 +100,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath;
  *  tableview 管理器
  */
 @property (nonatomic ,strong) RETableViewManager            *manager;
-@property (nonatomic ,strong) MYTableViewManager            *mManager;
+
 /**
  *  数据管理器
  */
@@ -143,9 +142,6 @@ forRowAtIndexPath:(NSIndexPath *)indexPath;
                listType:(NSInteger)listType
                delegate:(id /*<TFTableViewDataSourceDelegate>*/)delegate;
 
-- (id)initWithASTableView:(ASTableView *)tableView
-                 listType:(NSInteger)listType
-                 delegate:(id /*<TFTableViewDataSourceDelegate>*/)delegate;
 /**
  *  刷新列表数据
  *

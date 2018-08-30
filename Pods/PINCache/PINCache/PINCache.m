@@ -35,20 +35,10 @@ static NSString * const PINCacheSharedName = @"PINCacheShared";
 
 - (instancetype)initWithName:(NSString *)name
 {
-    return [self initWithName:name fileExtension:nil];
+    return [self initWithName:name rootPath:[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject]];
 }
 
-- (instancetype)initWithName:(NSString *)name fileExtension:(NSString *)fileExtension
-{
-    return [self initWithName:name rootPath:[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] fileExtension:fileExtension];
-}
-
-- (instancetype)initWithName:(NSString *)name rootPath:(NSString *)rootPath fileExtension:(NSString *)fileExtension
-{
-    return [self initWithName:name rootPath:rootPath serializer:nil deserializer:nil fileExtension:fileExtension];
-}
-
-- (instancetype)initWithName:(NSString *)name rootPath:(NSString *)rootPath serializer:(PINDiskCacheSerializerBlock)serializer deserializer:(PINDiskCacheDeserializerBlock)deserializer fileExtension:(NSString *)fileExtension
+- (instancetype)initWithName:(NSString *)name rootPath:(NSString *)rootPath
 {
     if (!name)
         return nil;
@@ -59,7 +49,7 @@ static NSString * const PINCacheSharedName = @"PINCacheShared";
         NSString *queueName = [[NSString alloc] initWithFormat:@"%@.%p", PINCachePrefix, (void *)self];
         _concurrentQueue = dispatch_queue_create([[NSString stringWithFormat:@"%@ Asynchronous Queue", queueName] UTF8String], DISPATCH_QUEUE_CONCURRENT);
         
-        _diskCache = [[PINDiskCache alloc] initWithName:_name rootPath:rootPath serializer:serializer deserializer:deserializer fileExtension:fileExtension];
+        _diskCache = [[PINDiskCache alloc] initWithName:_name rootPath:rootPath];
         _memoryCache = [[PINMemoryCache alloc] init];
     }
     return self;
@@ -120,14 +110,16 @@ static NSString * const PINCacheSharedName = @"PINCacheShared";
                 return;
             
             if (memoryCacheObject) {
-                [strongSelf->_diskCache fileURLForKey:memoryCacheKey block:NULL];
+                [strongSelf->_diskCache fileURLForKey:memoryCacheKey block:^(PINDiskCache *diskCache, NSString *diskCacheKey, id <NSCoding> diskCacheObject, NSURL *fileURL) {
+                    // update the access time on disk
+                }];
                 dispatch_async(strongSelf->_concurrentQueue, ^{
                     PINCache *strongSelf = weakSelf;
                     if (strongSelf)
                         block(strongSelf, memoryCacheKey, memoryCacheObject);
                 });
             } else {
-                [strongSelf->_diskCache objectForKey:memoryCacheKey block:^(PINDiskCache *diskCache, NSString *diskCacheKey, id <NSCoding> diskCacheObject) {
+                [strongSelf->_diskCache objectForKey:memoryCacheKey block:^(PINDiskCache *diskCache, NSString *diskCacheKey, id <NSCoding> diskCacheObject, NSURL *fileURL) {
                     PINCache *strongSelf = weakSelf;
                     if (!strongSelf)
                         return;
@@ -166,7 +158,7 @@ static NSString * const PINCacheSharedName = @"PINCacheShared";
             dispatch_group_leave(group);
         };
         
-        diskBlock = ^(PINDiskCache *diskCache, NSString *diskCacheKey, id <NSCoding> memoryCacheObject) {
+        diskBlock = ^(PINDiskCache *diskCache, NSString *diskCacheKey, id <NSCoding> memoryCacheObject, NSURL *memoryCacheFileURL) {
             dispatch_group_leave(group);
         };
     }
@@ -206,7 +198,7 @@ static NSString * const PINCacheSharedName = @"PINCacheShared";
             dispatch_group_leave(group);
         };
         
-        diskBlock = ^(PINDiskCache *diskCache, NSString *diskCacheKey, id <NSCoding> memoryCacheObject) {
+        diskBlock = ^(PINDiskCache *diskCache, NSString *diskCacheKey, id <NSCoding> memoryCacheObject, NSURL *memoryCacheFileURL) {
             dispatch_group_leave(group);
         };
     }

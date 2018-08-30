@@ -20,12 +20,12 @@ target 'TimeFaceFoundation' do
     pod 'ActionSheetPicker-3.0'
     pod 'EGOCache'
     pod 'JTCalendar'
-    pod 'PINRemoteImage'
+    pod 'PINRemoteImage', '= 3.0.0-beta.2'
     pod 'GKFadeNavigationController‘
     pod 'Masonry'
     pod 'JSONModel'
     pod 'SVProgressHUD'
-    pod 'MYTableViewManager', :git => 'https://github.com/beck0527/MYTableViewManager.git'
+    #pod 'MYTableViewManager', :git => 'https://github.com/beck0527/MYTableViewManager.git'
 
     pod 'MJRefresh'
     
