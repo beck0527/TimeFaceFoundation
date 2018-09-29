@@ -32,6 +32,8 @@
 #define kContentViewBackgroundColor [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:0.75]
 #define kDefaultContentColor [UIColor colorWithRed:153.0/255.0 green:153.0/255.0 blue:153.0/255.0 alpha:1.0]
 
+#define iPhoneX_ViewPage (([UIApplication sharedApplication].statusBarFrame.size.height > 20) ? YES: NO)
+
 NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
 {
     return currentOffsetX > previousOffsetX ? kTFScrollDirectionRight   :
@@ -132,7 +134,7 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
 
 // Tab and content stuff
 @property UIScrollView *tabsView;
-@property UIView *contentView;
+
 
 @property UIPageViewController *pageViewController;
 @property (assign) id<UIScrollViewDelegate> actualDelegate;
@@ -154,6 +156,7 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
 @property (nonatomic) NSNumber *hiddenTab;
 @property (nonatomic) CGFloat  screenWidth;
 @property (nonatomic) CGFloat  previousOffsetX;
+@property (nonatomic) NSNumber *autoTabWidth;
 
 @property (nonatomic) NSUInteger tabCount;
 @property (nonatomic) NSUInteger activeTabIndex;
@@ -259,6 +262,12 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     else {
         frame.size.height = [self.tabHeight floatValue];
     }
+    
+    if(iPhoneX_ViewPage)
+    {
+        frame.origin.y += 24;
+    }
+    
     self.tabsView.frame = frame;
     
     frame = self.contentView.frame;
@@ -275,6 +284,12 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     frame.size.width = CGRectGetWidth(self.view.frame);
     
     frame.size.height = CGRectGetHeight(self.view.frame) - (topLayoutGuide + CGRectGetHeight(self.tabsView.frame));
+    
+    if(iPhoneX_ViewPage)
+    {
+        frame.origin.y += 24;
+    }
+    
     self.contentView.frame = frame;
 }
 
@@ -289,7 +304,7 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     //if Tap is not selected Tab(new Tab)
     if (self.activeTabIndex != index) {
         // Select the tab
-        [self selectTabAtIndex:index];
+        [self selectTabAtIndex:index flag:NO];
     }
 }
 
@@ -307,62 +322,62 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
 - (void)setTabHeight:(NSNumber *)tabHeight {
     
     if ([tabHeight floatValue] < 4.0)
-        tabHeight = [NSNumber numberWithFloat:4.0];
+    tabHeight = [NSNumber numberWithFloat:4.0];
     else if ([tabHeight floatValue] > CGRectGetHeight(self.view.frame))
-        tabHeight = [NSNumber numberWithFloat:CGRectGetHeight(self.view.frame)];
+    tabHeight = [NSNumber numberWithFloat:CGRectGetHeight(self.view.frame)];
     
     _tabHeight = tabHeight;
 }
 - (void)setTabOffset:(NSNumber *)tabOffset {
     
     if ([tabOffset floatValue] < 0.0)
-        tabOffset = [NSNumber numberWithFloat:0.0];
+    tabOffset = [NSNumber numberWithFloat:0.0];
     else if ([tabOffset floatValue] > CGRectGetWidth(self.view.frame) - [self.tabWidth floatValue])
-        tabOffset = [NSNumber numberWithFloat:CGRectGetWidth(self.view.frame) - [self.tabWidth floatValue]];
+    tabOffset = [NSNumber numberWithFloat:CGRectGetWidth(self.view.frame) - [self.tabWidth floatValue]];
     
     _tabOffset = tabOffset;
 }
 - (void)setTabWidth:(NSNumber *)tabWidth {
     
     if ([tabWidth floatValue] < 4.0)
-        tabWidth = [NSNumber numberWithFloat:4.0];
+    tabWidth = [NSNumber numberWithFloat:4.0];
     else if ([tabWidth floatValue] > CGRectGetWidth(self.view.frame))
-        tabWidth = [NSNumber numberWithFloat:CGRectGetWidth(self.view.frame)];
+    tabWidth = [NSNumber numberWithFloat:CGRectGetWidth(self.view.frame)];
     
     _tabWidth = tabWidth;
 }
 - (void)setTabLocation:(NSNumber *)tabLocation {
     
     if ([tabLocation floatValue] != 1.0 && [tabLocation floatValue] != 0.0)
-        tabLocation = [tabLocation boolValue] ? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO];
+    tabLocation = [tabLocation boolValue] ? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO];
     
     _tabLocation = tabLocation;
 }
 - (void)setStartFromSecondTab:(NSNumber *)startFromSecondTab {
     
     if ([startFromSecondTab floatValue] != 1.0 && [startFromSecondTab floatValue] != 0.0)
-        startFromSecondTab = [startFromSecondTab boolValue] ? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO];
+    startFromSecondTab = [startFromSecondTab boolValue] ? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO];
     
     _startFromSecondTab = startFromSecondTab;
 }
 - (void)setCenterCurrentTab:(NSNumber *)centerCurrentTab {
     
     if ([centerCurrentTab floatValue] != 1.0 && [centerCurrentTab floatValue] != 0.0)
-        centerCurrentTab = [centerCurrentTab boolValue] ? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO];
+    centerCurrentTab = [centerCurrentTab boolValue] ? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO];
     
     _centerCurrentTab = centerCurrentTab;
 }
 - (void)setFixFormerTabsPositions:(NSNumber *)fixFormerTabsPositions {
     
     if ([fixFormerTabsPositions floatValue] != 1.0 && [fixFormerTabsPositions floatValue] != 0.0)
-        fixFormerTabsPositions = [fixFormerTabsPositions boolValue] ? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO];
+    fixFormerTabsPositions = [fixFormerTabsPositions boolValue] ? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO];
     
     _fixFormerTabsPositions = fixFormerTabsPositions;
 }
 - (void)setFixLatterTabsPositions:(NSNumber *)fixLatterTabsPositions {
     
     if ([fixLatterTabsPositions floatValue] != 1.0 && [fixLatterTabsPositions floatValue] != 0.0)
-        fixLatterTabsPositions = [fixLatterTabsPositions boolValue] ? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO];
+    fixLatterTabsPositions = [fixLatterTabsPositions boolValue] ? [NSNumber numberWithBool:YES] : [NSNumber numberWithBool:NO];
     
     _fixLatterTabsPositions = fixLatterTabsPositions;
 }
@@ -419,6 +434,11 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     // __weak pageViewController to be used in blocks to prevent retaining strong reference to self
     __weak UIPageViewController *weakPageViewController = self.pageViewController;
     __weak ViewPagerController *weakSelf = self;
+    
+    if(!viewController)
+    {
+        return;
+    }
     
     if (activeContentIndex == self.activeContentIndex) {
         
@@ -489,7 +509,7 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     if (!_contentHeight) {
         CGFloat value = 0;
         if ([self.delegate respondsToSelector:@selector(viewPager:valueForOption:withDefault:)])
-            value = [self.delegate viewPager:self valueForOption:ViewPagerOptionContentHeight withDefault:value];
+        value = [self.delegate viewPager:self valueForOption:ViewPagerOptionContentHeight withDefault:value];
         self.contentHeight = [NSNumber numberWithFloat:value];
     }
     return _contentHeight;
@@ -499,7 +519,7 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     if (!_tabHeight) {
         CGFloat value = kTabHeight;
         if ([self.delegate respondsToSelector:@selector(viewPager:valueForOption:withDefault:)])
-            value = [self.delegate viewPager:self valueForOption:ViewPagerOptionTabHeight withDefault:value];
+        value = [self.delegate viewPager:self valueForOption:ViewPagerOptionTabHeight withDefault:value];
         self.tabHeight = [NSNumber numberWithFloat:value];
     }
     return _tabHeight;
@@ -509,7 +529,7 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     if (!_tabOffset) {
         CGFloat value = kTabOffset;
         if ([self.delegate respondsToSelector:@selector(viewPager:valueForOption:withDefault:)])
-            value = [self.delegate viewPager:self valueForOption:ViewPagerOptionTabOffset withDefault:value];
+        value = [self.delegate viewPager:self valueForOption:ViewPagerOptionTabOffset withDefault:value];
         self.tabOffset = [NSNumber numberWithFloat:value];
     }
     return _tabOffset;
@@ -519,7 +539,7 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     if (!_tabWidth) {
         CGFloat value = kTabWidth;
         if ([self.delegate respondsToSelector:@selector(viewPager:valueForOption:withDefault:)])
-            value = [self.delegate viewPager:self valueForOption:ViewPagerOptionTabWidth withDefault:value];
+        value = [self.delegate viewPager:self valueForOption:ViewPagerOptionTabWidth withDefault:value];
         self.tabWidth = [NSNumber numberWithFloat:value];
     }
     return _tabWidth;
@@ -529,7 +549,7 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     if (!_tabLocation) {
         CGFloat value = kTabLocation;
         if ([self.delegate respondsToSelector:@selector(viewPager:valueForOption:withDefault:)])
-            value = [self.delegate viewPager:self valueForOption:ViewPagerOptionTabLocation withDefault:value];
+        value = [self.delegate viewPager:self valueForOption:ViewPagerOptionTabLocation withDefault:value];
         self.tabLocation = [NSNumber numberWithFloat:value];
     }
     return _tabLocation;
@@ -539,7 +559,7 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     if (!_startFromSecondTab) {
         CGFloat value = kStartFromSecondTab;
         if ([self.delegate respondsToSelector:@selector(viewPager:valueForOption:withDefault:)])
-            value = [self.delegate viewPager:self valueForOption:ViewPagerOptionStartFromSecondTab withDefault:value];
+        value = [self.delegate viewPager:self valueForOption:ViewPagerOptionStartFromSecondTab withDefault:value];
         self.startFromSecondTab = [NSNumber numberWithFloat:value];
     }
     return _startFromSecondTab;
@@ -549,7 +569,7 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     if (!_centerCurrentTab) {
         CGFloat value = kCenterCurrentTab;
         if ([self.delegate respondsToSelector:@selector(viewPager:valueForOption:withDefault:)])
-            value = [self.delegate viewPager:self valueForOption:ViewPagerOptionCenterCurrentTab withDefault:value];
+        value = [self.delegate viewPager:self valueForOption:ViewPagerOptionCenterCurrentTab withDefault:value];
         self.centerCurrentTab = [NSNumber numberWithFloat:value];
     }
     return _centerCurrentTab;
@@ -559,7 +579,7 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     if (!_fixFormerTabsPositions) {
         CGFloat value = kFixFormerTabsPositions;
         if ([self.delegate respondsToSelector:@selector(viewPager:valueForOption:withDefault:)])
-            value = [self.delegate viewPager:self valueForOption:ViewPagerOptionFixFormerTabsPositions withDefault:value];
+        value = [self.delegate viewPager:self valueForOption:ViewPagerOptionFixFormerTabsPositions withDefault:value];
         self.fixFormerTabsPositions = [NSNumber numberWithFloat:value];
     }
     return _fixFormerTabsPositions;
@@ -569,7 +589,7 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     if (!_fixLatterTabsPositions) {
         CGFloat value = kFixLatterTabsPositions;
         if ([self.delegate respondsToSelector:@selector(viewPager:valueForOption:withDefault:)])
-            value = [self.delegate viewPager:self valueForOption:ViewPagerOptionFixLatterTabsPositions withDefault:value];
+        value = [self.delegate viewPager:self valueForOption:ViewPagerOptionFixLatterTabsPositions withDefault:value];
         self.fixLatterTabsPositions = [NSNumber numberWithFloat:value];
     }
     return _fixLatterTabsPositions;
@@ -579,10 +599,20 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     if (!_hiddenTab) {
         CGFloat value = 0;
         if ([self.delegate respondsToSelector:@selector(viewPager:valueForOption:withDefault:)])
-            value = [self.delegate viewPager:self valueForOption:ViewPagerOptionHiddenTab withDefault:value];
+        value = [self.delegate viewPager:self valueForOption:ViewPagerOptionHiddenTab withDefault:value];
         self.hiddenTab = [NSNumber numberWithFloat:value];
     }
     return _hiddenTab;
+}
+
+- (NSNumber *)autoTabWidth {
+    if (!_autoTabWidth) {
+        BOOL value = NO;
+        if ([self.delegate respondsToSelector:@selector(viewPager:valueForOption:withDefault:)])
+        value = [self.delegate viewPager:self valueForOption:ViewPagerOptionAutoTabWidth withDefault:value];
+        self.autoTabWidth = [NSNumber numberWithFloat:value];
+    }
+    return _autoTabWidth;
 }
 
 - (UIColor *)indicatorColor {
@@ -642,6 +672,12 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     // Call to setup again with the updated data
     [self defaultSetup];
 }
+
+- (void)selectTabAtIndex:(NSUInteger)index flag:(BOOL)flag {
+    _flag = flag;
+    [self selectTabAtIndex:index];
+}
+
 - (void)selectTabAtIndex:(NSUInteger)index {
     
     if (index >= self.tabCount) {
@@ -778,20 +814,22 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
 - (CGFloat)valueForOption:(ViewPagerOption)option {
     
     switch (option) {
-        case ViewPagerOptionTabHeight:
+            case ViewPagerOptionTabHeight:
             return [[self tabHeight] floatValue];
-        case ViewPagerOptionTabOffset:
+            case ViewPagerOptionTabOffset:
             return [[self tabOffset] floatValue];
-        case ViewPagerOptionTabWidth:
+            case ViewPagerOptionTabWidth:
             return [[self tabWidth] floatValue];
-        case ViewPagerOptionTabLocation:
+            case ViewPagerOptionTabLocation:
             return [[self tabLocation] floatValue];
-        case ViewPagerOptionStartFromSecondTab:
+            case ViewPagerOptionStartFromSecondTab:
             return [[self startFromSecondTab] floatValue];
-        case ViewPagerOptionCenterCurrentTab:
+            case ViewPagerOptionCenterCurrentTab:
             return [[self centerCurrentTab] floatValue];
-        case ViewPagerOptionHiddenTab:
+            case ViewPagerOptionHiddenTab:
             return [[self hiddenTab] floatValue];
+            case ViewPagerOptionAutoTabWidth:
+            return [[self autoTabWidth] boolValue];
         default:
             return NAN;
     }
@@ -799,11 +837,11 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
 - (UIColor *)colorForComponent:(ViewPagerComponent)component {
     
     switch (component) {
-        case ViewPagerIndicator:
+            case ViewPagerIndicator:
             return [self indicatorColor];
-        case ViewPagerTabsView:
+            case ViewPagerTabsView:
             return [self tabsViewBackgroundColor];
-        case ViewPagerContent:
+            case ViewPagerContent:
             return [self contentViewBackgroundColor];
         default:
             return [UIColor clearColor];
@@ -819,7 +857,7 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
                                                                             options:nil];
     [self addChildViewController:self.pageViewController];
     [self.pageViewController willMoveToParentViewController:self];
-
+    
     // Setup some forwarding events to hijack the scrollView
     // Keep a reference to the actual delegate
     self.actualDelegate = ((UIScrollView *)[self.pageViewController.view.subviews objectAtIndex:0]).delegate;
@@ -864,6 +902,7 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     
     // Add tabsView
     self.tabsView = (UIScrollView *)[self.view viewWithTag:kTabViewTag];
+    self.tabsView.scrollsToTop = NO;
     
     if (!self.tabsView) {
         
@@ -931,19 +970,19 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
         
         self.contentView = self.pageViewController.view;
         self.contentView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-//        self.contentView.contentMode = UIViewContentModeTop;
+        //        self.contentView.contentMode = UIViewContentModeTop;
         self.contentView.backgroundColor = self.contentViewBackgroundColor;
         self.contentView.bounds = self.view.bounds;
         self.contentView.tag = kContentViewTag;
-//        self.contentView.layer.borderWidth = 1;
-//        self.contentView.layer.borderColor = [UIColor redColor].CGColor;
+        //        self.contentView.layer.borderWidth = 1;
+        //        self.contentView.layer.borderColor = [UIColor redColor].CGColor;
         
         [self.view insertSubview:self.contentView atIndex:0];
     }
     
     // Select starting tab
     NSUInteger index = [self.startFromSecondTab boolValue] ? 1 : 0;
-    [self selectTabAtIndex:index];
+    [self selectTabAtIndex:index flag:NO];
     
     // Set setup done
     self.defaultSetupDone = YES;
@@ -959,10 +998,16 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     }
     
     if ([[self.tabs objectAtIndex:index] isEqual:[NSNull null]]) {
-
+        
         // Get view from dataSource
         UIView *tabViewContent = [self.dataSource viewPager:self viewForTabAtIndex:index];
         tabViewContent.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+        
+        if ([self.autoTabWidth boolValue] && [tabViewContent isKindOfClass:[UIButton class]]) {
+            UIButton *button = (UIButton *)tabViewContent;
+            CGSize size = [button.titleLabel.text sizeWithAttributes:@{NSFontAttributeName:button.titleLabel.font}];
+            self.tabWidth = @(size.width + 24.f);
+        }
         
         // Create TabView and subview the content
         TabView *tabView = [[TabView alloc] initWithFrame:CGRectMake(0.0, 0.0, [self.tabWidth floatValue], [self.tabHeight floatValue])];
@@ -1009,7 +1054,11 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
             viewController = [[UIViewController alloc] init];
             viewController.view = [[UIView alloc] init];
         }
-        [self.contents replaceObjectAtIndex:index withObject:viewController];
+        
+        if(viewController && index < self.contents.count)
+        {
+            [self.contents replaceObjectAtIndex:index withObject:viewController];
+        }
     }
     
     return [self.contents objectAtIndex:index];
@@ -1038,26 +1087,26 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
     
     // Select tab
     NSUInteger index = [self indexForViewController:viewController];
-    [self selectTabAtIndex:index];
+    [self selectTabAtIndex:index flag:NO];
 }
 
 #pragma mark - UIScrollViewDelegate, Responding to Scrolling and Dragging
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     TFLog(@"contentOffset.x = %f",scrollView.contentOffset.x);
-//    if ((self.screenWidth - scrollView.contentOffset.x) > 30) {
-//        [[NSNotificationCenter defaultCenter] postNotificationName:NOTICE_OPENLEFTMENU object:nil];
-//    }
+    //    if ((self.screenWidth - scrollView.contentOffset.x) > 30) {
+    //        [[NSNotificationCenter defaultCenter] postNotificationName:NOTICE_OPENLEFTMENU object:nil];
+    //    }
     
-//    if (self.activeContentIndex == 0) {
-//        CGFloat currentOffsetX = scrollView.contentOffset.x;
-//        ScrollDirection currentScrollDirection = detectScrollDirectionViewPage(currentOffsetX, _previousOffsetX);
-//        if (currentScrollDirection == ScrollDirectionRight || currentScrollDirection == ScrollDirectionLeft) {
-//            NSDictionary *userInfo = @{
-//                                       @"scrollDirection"  :  [NSString stringWithFormat:@"%@",@(currentScrollDirection)]
-//                                       };
-//            [[NSNotificationCenter defaultCenter] postNotificationName:NOTICE_OPENLEFTMENU object:nil userInfo:userInfo];
-//        }
-//    }
+    //    if (self.activeContentIndex == 0) {
+    //        CGFloat currentOffsetX = scrollView.contentOffset.x;
+    //        ScrollDirection currentScrollDirection = detectScrollDirectionViewPage(currentOffsetX, _previousOffsetX);
+    //        if (currentScrollDirection == ScrollDirectionRight || currentScrollDirection == ScrollDirectionLeft) {
+    //            NSDictionary *userInfo = @{
+    //                                       @"scrollDirection"  :  [NSString stringWithFormat:@"%@",@(currentScrollDirection)]
+    //                                       };
+    //            [[NSNotificationCenter defaultCenter] postNotificationName:NOTICE_OPENLEFTMENU object:nil userInfo:userInfo];
+    //        }
+    //    }
     
     
     if ([self.actualDelegate respondsToSelector:@selector(scrollViewDidScroll:)]) {
@@ -1166,4 +1215,5 @@ NSInteger detectScrollDirectionViewPage(currentOffsetX, previousOffsetX)
 }
 
 @end
+
 

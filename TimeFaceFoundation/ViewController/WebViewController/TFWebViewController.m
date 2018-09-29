@@ -9,19 +9,18 @@
 #import "TFWebViewController.h"
 #import "TFDefaultStyle.h"
 #import "TFCoreUtility.h"
-#import "WebViewJavascriptBridge.h"
+
 #import <NJKWebViewProgress/NJKWebViewProgress.h>
 #import <NJKWebViewProgressView.h>
 #import "TFDataHelper.h"
 #import "TimeFaceFoundationConst.h"
 
+#define iPhoneX_WebView (([UIApplication sharedApplication].statusBarFrame.size.height > 20) ? YES: NO)
 @interface TFWebViewController ()<NJKWebViewProgressDelegate>{
     BOOL            firstLoaded;
     NSDictionary    *shareContent;
 }
 
-@property (nonatomic ,assign) LocalViewType shareType;
-@property (nonatomic ,strong) WebViewJavascriptBridge *jsBridge;
 @property (nonatomic ,strong) NJKWebViewProgress      *progressProxy;
 @property (nonatomic ,strong) NJKWebViewProgressView  *progressView;
 
@@ -65,33 +64,44 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     // Do any additional setup after loading the view.
-    self.webView.tfTop = 64.f;
-    self.webView.tfHeight -= 64.f;
+    
+    if(iPhoneX_WebView)
+    {
+        self.webView.tfTop = 88.f;
+        self.webView.tfHeight -= 88.f;
+        self.webView.tfHeight -= 34.f;
+    }
+    else
+    {
+        self.webView.tfTop = 64.f;
+        self.webView.tfHeight -= 64.f;
+    }
     
     self.navigationItem.rightBarButtonItems = nil;
     self.navigationItem.leftBarButtonItems = [[TFCoreUtility sharedUtility] createBarButtonsWithImage:@"NavButtonBack.png"
-                                                                              selectedImageName:@"NavButtonBackH.png"
-                                                                                       delegate:self
-                                                                                       selector:@selector(onLeftNavClick:)];
+                                                                                    selectedImageName:@"NavButtonBackH.png"
+                                                                                             delegate:self
+                                                                                             selector:@selector(onLeftNavClick:)];
     switch (_shareType) {
-        case LocalViewTypeNone:
-        case LocalViewTypeTimeDetail:
-        case LocalViewTypeTopicDetail:
-        case LocalViewTypeUserDetail:
-        case LocalViewTypeEventDetail:
+            case LocalViewTypeNone:
+            case LocalViewTypeTimeDetail:
+            case LocalViewTypeTopicDetail:
+            case LocalViewTypeUserDetail:
+            case LocalViewTypeEventDetail:
             self.navigationItem.rightBarButtonItems = [[TFCoreUtility sharedUtility] createBarButtonsWithImage:@"NavButtonMore.png"
-                                                                                       selectedImageName:@"NavButtonMoreH.png"
-                                                                                                delegate:self
-                                                                                                selector:@selector(onRightNavClick:)];
+                                                                                             selectedImageName:@"NavButtonMoreH.png"
+                                                                                                      delegate:self
+                                                                                                      selector:@selector(onRightNavClick:)];
             break;
             
         default:
             break;
     }
- 
+    
     [self addObserver];
- 
+    
 }
 
 - (void)addObserver {
@@ -109,10 +119,8 @@
 }
 
 - (void)removeObserver {
-    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kTFCloseWebViewNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kTFOpenLocalNotification object:nil];
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -122,7 +130,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-   if (_url.length) {
+    if (_url.length) {
         if (!firstLoaded) {
             [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_url]]];
             firstLoaded = YES;
@@ -164,24 +172,26 @@
         _webView.scalesPageToFit = YES;
         [self.view addSubview:_webView];
         
-        
+        __weak __typeof(self)weakself=self;
         _jsBridge = [WebViewJavascriptBridge bridgeForWebView:_webView
                                               webViewDelegate:self
                                                       handler:^(id data, WVJBResponseCallback responseCallback)
-        {
-            NSLog(@"ObjC received message from JS: %@", data);
-            responseCallback(@{@"status":@"1",@"info":@"success" });
-        }];
+                     {
+                         NSLog(@"ObjC received message from JS: %@", data);
+                         responseCallback(@{@"status":@"1",@"info":@"success" });
+                     }];
         
+        [self regestBridge];
+        
+        __weak __typeof__(self) weakSelf = self;
         
         //关闭当前页面
         [_jsBridge registerHandler:@"closeWebView" handler:^(id data, WVJBResponseCallback responseCallback)
          {
-             [self closeAction];
+             
+             [weakself closeAction];
+             
          }];
-        
-                
-               
         
         _progressProxy = [[NJKWebViewProgress alloc] init]; // instance variable
         _webView.delegate = _progressProxy;
@@ -210,24 +220,24 @@
 }
 
 - (void)onRightNavClick:(id)sender {
-//    ShareTFType shareType = ShareTFTypeWeb;
-//    NSString *title = [shareContent objectForKey:@"title"]?[shareContent objectForKey:@"title"]:self.navigationItem.title;
-//    NSString *content = [shareContent objectForKey:@"content"]?[shareContent objectForKey:@"content"]:self.navigationItem.title;
-//    NSString *url = [shareContent objectForKey:@"url"]?[shareContent objectForKey:@"title"]:_url;
-//    NSString *imageUrl = @"";
-//    if ([[shareContent objectForKey:@"icon"] length]) {
-//        imageUrl = [shareContent objectForKey:@"icon"];
-//    }
-//    switch (_shareType) {
-//        case LocalViewTypeEventDetail:
-//            shareType = ShareTFTypeEvent;
-//            break;
-//            
-//        default:
-//            break;
-//    }
-//
-//    [self shareWithTitle:title content:content imageUrl:imageUrl shareType:shareType url:url];
+    //    ShareTFType shareType = ShareTFTypeWeb;
+    //    NSString *title = [shareContent objectForKey:@"title"]?[shareContent objectForKey:@"title"]:self.navigationItem.title;
+    //    NSString *content = [shareContent objectForKey:@"content"]?[shareContent objectForKey:@"content"]:self.navigationItem.title;
+    //    NSString *url = [shareContent objectForKey:@"url"]?[shareContent objectForKey:@"title"]:_url;
+    //    NSString *imageUrl = @"";
+    //    if ([[shareContent objectForKey:@"icon"] length]) {
+    //        imageUrl = [shareContent objectForKey:@"icon"];
+    //    }
+    //    switch (_shareType) {
+    //        case LocalViewTypeEventDetail:
+    //            shareType = ShareTFTypeEvent;
+    //            break;
+    //
+    //        default:
+    //            break;
+    //    }
+    //
+    //    [self shareWithTitle:title content:content imageUrl:imageUrl shareType:shareType url:url];
     
     
 }
@@ -247,33 +257,31 @@
 }
 
 - (void)handleLocalView:(NSString *)dataId type:(NSInteger)type {
-//    switch (type) {
-//        case 1:     //打开时光详情
-//            [self openTimeDetail:dataId onlyComment:NO];
-//            break;
-//            
-//        case 2:     //打开话题详情
-//            [self openTopicDetail:dataId onlyComment:NO];
-//            break;
-//            
-//        case 3:     //打开用户详情
-//            [self openUserDetail:dataId];
-//            break;
-//            
-//        case 4:     //打开评论详情
-//            [self openTimeDetail:dataId onlyComment:YES];
-//            break;
-//            
-//        case 5:     //打开时光书详情
-//            [self openBookSummary:dataId sell:NO];
-//            break;
-//            
-//        default:
-//            break;
-//    }
+    //    switch (type) {
+    //        case 1:     //打开时光详情
+    //            [self openTimeDetail:dataId onlyComment:NO];
+    //            break;
+    //
+    //        case 2:     //打开话题详情
+    //            [self openTopicDetail:dataId onlyComment:NO];
+    //            break;
+    //
+    //        case 3:     //打开用户详情
+    //            [self openUserDetail:dataId];
+    //            break;
+    //
+    //        case 4:     //打开评论详情
+    //            [self openTimeDetail:dataId onlyComment:YES];
+    //            break;
+    //
+    //        case 5:     //打开时光书详情
+    //            [self openBookSummary:dataId sell:NO];
+    //            break;
+    //
+    //        default:
+    //            break;
+    //    }
 }
-
-
 
 
 - (void)closeAction {
@@ -299,16 +307,15 @@
     return YES;
 }
 
-
 - (void)updateLeftBarButton {
     if ([_webView canGoBack]) {
         self.navigationItem.leftBarButtonItems = [self createBarButtons];
     }
     else {
         self.navigationItem.leftBarButtonItems = [[TFCoreUtility sharedUtility] createBarButtonsWithImage:@"NavButtonBack.png"
-                                                                                  selectedImageName:@"NavButtonBackH.png"
-                                                                                           delegate:self
-                                                                                           selector:@selector(onLeftNavClick:)];
+                                                                                        selectedImageName:@"NavButtonBackH.png"
+                                                                                                 delegate:self
+                                                                                                 selector:@selector(onLeftNavClick:)];
     }
 }
 
@@ -331,13 +338,15 @@
 - (void)webViewDidFinishLoad:(UIWebView*)webView {
     self.title = [_webView stringByEvaluatingJavaScriptFromString:@"document.title"];
     [self updateLeftBarButton];
+    self.progressView.hidden = YES;
 }
 
 
 - (void)webView:(UIWebView*)webView didFailLoadWithError:(NSError*)error {
     [self webViewDidFinishLoad:webView];
     if (error) {
-        [self showStateView:kTFViewStateDataError];
+        //[self showStateView:kTFViewStateDataError];
+        [_webView reload];
     }
 }
 
@@ -373,5 +382,5 @@
     [_progressView setProgress:progress animated:YES];
 }
 
-
 @end
+

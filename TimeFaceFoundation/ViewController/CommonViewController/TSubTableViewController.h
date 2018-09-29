@@ -17,6 +17,5 @@
 @property (nonatomic ,assign          ) NSInteger            listType;
 @property (nonatomic ,assign          ) BOOL                loaded;
 @property (nonatomic ,assign          ) BOOL                usePullReload;
-@property (nonatomic ,assign          ) BOOL                useASKit;
 
 @end
