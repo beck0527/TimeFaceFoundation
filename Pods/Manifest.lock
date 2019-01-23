@@ -21,7 +21,6 @@ PODS:
   - FMDB (2.7.2):
     - FMDB/standard (= 2.7.2)
   - FMDB/standard (2.7.2)
-  - GKFadeNavigationController (0.5.2)
   - GPUImage (0.1.7)
   - HHRouter (0.1.9)
   - JDStatusBarNotification (1.5.6)
@@ -35,14 +34,15 @@ PODS:
   - NJKWebViewProgress/Core (0.2.3)
   - NJKWebViewProgress/ProgressView (0.2.3)
   - PINCache (2.3)
-  - PINRemoteImage (3.0.0-beta.2):
-    - PINRemoteImage/FLAnimatedImage (= 3.0.0-beta.2)
-  - PINRemoteImage/Core (3.0.0-beta.2):
+  - PINRemoteImage (2.1.4):
+    - PINRemoteImage/FLAnimatedImage (= 2.1.4)
+  - PINRemoteImage/Core (2.1.4):
     - PINCache (>= 2.1)
-  - PINRemoteImage/FLAnimatedImage (3.0.0-beta.2):
+  - PINRemoteImage/FLAnimatedImage (2.1.4):
     - FLAnimatedImage (>= 1.0)
     - PINRemoteImage/Core
   - pop (1.0.10)
+  - Reachability (3.2)
   - REFormattedNumberField (1.1.6)
   - RETableViewManager (1.7):
     - REFormattedNumberField (~> 1.1.5)
@@ -60,7 +60,6 @@ DEPENDENCIES:
   - DateTools
   - EGOCache
   - FMDB
-  - GKFadeNavigationController
   - GPUImage
   - HHRouter
   - JDStatusBarNotification
@@ -69,8 +68,9 @@ DEPENDENCIES:
   - Masonry
   - MJRefresh
   - NJKWebViewProgress
-  - PINRemoteImage (= 3.0.0-beta.2)
+  - PINRemoteImage
   - pop
+  - Reachability
   - RETableViewManager
   - SDWebImage
   - SSKeychain
@@ -84,7 +84,6 @@ SPEC REPOS:
     - EGOCache
     - FLAnimatedImage
     - FMDB
-    - GKFadeNavigationController
     - GPUImage
     - HHRouter
     - JDStatusBarNotification
@@ -96,6 +95,7 @@ SPEC REPOS:
     - PINCache
     - PINRemoteImage
     - pop
+    - Reachability
     - REFormattedNumberField
     - RETableViewManager
     - REValidation
@@ -110,7 +110,6 @@ SPEC CHECKSUMS:
   EGOCache: 191fd213da6804d487b49b1a91772ba904f3e324
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   FMDB: 6198a90e7b6900cfc046e6bc0ef6ebb7be9236aa
-  GKFadeNavigationController: 87dec5159db580ee1f2ba263720045bec50404ee
   GPUImage: 733a5f0fab92df9de1c37ba9df520a833ccb406d
   HHRouter: c096524e95a07a1970e6e23a19ee5a9592dc326d
   JDStatusBarNotification: d5829a8f2f291b23b8a54b87fac8bf2549945a2f
@@ -120,8 +119,9 @@ SPEC CHECKSUMS:
   MJRefresh: b48380ae2b927b46c4ef000de9adb8dc748e1df7
   NJKWebViewProgress: f481fd424cb5ecc27eacae11b5397db92fba9a4d
   PINCache: ce36ed282031b92fc7733ffe831f474ff80fddc2
-  PINRemoteImage: 197554c5ba57a6ae90f5db441651180039fc9062
+  PINRemoteImage: 4ac4011c5caefd6befd99758e09becede05d3226
   pop: 82ca6b068ce9278fd350fd9dd09482a0ce9492e6
+  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   REFormattedNumberField: 70fc5fb1218ebd5ee9983820defd12806d5c6ec6
   RETableViewManager: 0f24d796c42c0890d38c79cc9aeb3871e186726e
   REValidation: 38c4de1be58455f8b00aab208ac80db316a66b7f
@@ -129,6 +129,6 @@ SPEC CHECKSUMS:
   SSKeychain: 55cc80f66f5c73da827e3077f02e43528897db41
   SVProgressHUD: c404a55d78acbeb7ebb78b76d3faf986475a6994
 
-PODFILE CHECKSUM: ae3529eacefb89efb03b7e74318a9fb68a3585c5
+PODFILE CHECKSUM: d2ce37d647f98cf680c6c36e582594929142b3be
 
 COCOAPODS: 1.5.3

@@ -67,7 +67,7 @@
             dispatch_async(queue, ^
             {
                 progressImageBlock([PINRemoteImageManagerResult imageResultWithImage:image
-                                                           alternativeRepresentation:nil
+                                                                       animatedImage:nil
                                                                        requestLength:CACurrentMediaTime() - requestTime
                                                                                error:nil
                                                                           resultType:PINRemoteImageResultTypeProgress

@@ -9,7 +9,6 @@
 #import "AppDelegate.h"
 #import "TFCoreUtility.h"
 #import "TNavigationViewController.h"
-#import <GKFadeNavigationController/GKFadeNavigationController.h>
 #import "TestViewController.h"
 
 @interface AppDelegate ()

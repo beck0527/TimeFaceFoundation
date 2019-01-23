@@ -93,7 +93,6 @@ EOM
 }
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_resource "${PODS_ROOT}/DateTools/DateTools/DateTools/DateTools.bundle"
-  install_resource "${PODS_CONFIGURATION_BUILD_DIR}/GKFadeNavigationController/GKFadeNavigationController.bundle"
   install_resource "${PODS_ROOT}/GPUImage/framework/Resources/lookup.png"
   install_resource "${PODS_ROOT}/GPUImage/framework/Resources/lookup_amatorka.png"
   install_resource "${PODS_ROOT}/GPUImage/framework/Resources/lookup_miss_etikate.png"
@@ -106,7 +105,6 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_resource "${PODS_ROOT}/DateTools/DateTools/DateTools/DateTools.bundle"
-  install_resource "${PODS_CONFIGURATION_BUILD_DIR}/GKFadeNavigationController/GKFadeNavigationController.bundle"
   install_resource "${PODS_ROOT}/GPUImage/framework/Resources/lookup.png"
   install_resource "${PODS_ROOT}/GPUImage/framework/Resources/lookup_amatorka.png"
   install_resource "${PODS_ROOT}/GPUImage/framework/Resources/lookup_miss_etikate.png"

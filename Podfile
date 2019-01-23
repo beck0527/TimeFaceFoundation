@@ -21,12 +21,14 @@ target 'TimeFaceFoundation' do
     pod 'EGOCache'
     pod 'JTCalendar'
     pod 'PINRemoteImage'
-    pod 'GKFadeNavigationController‘
     pod 'Masonry'
     pod 'JSONModel'
     pod 'SVProgressHUD'
 
     pod 'MJRefresh'
+    
+    pod 'Reachability'
+
     
     xcodeproj 'TimeFaceFoundation.xcodeproj'
 end
