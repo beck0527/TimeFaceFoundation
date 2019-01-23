@@ -7,6 +7,9 @@ Pod::Spec.new do |s|
   s.author             = { "zguanyu" => "zhuguanyu@timeface.cn" }
   s.social_media_url   = "http://www.timeface.cn"
   s.ios.deployment_target = "9.0"
+
+  s.platform = :ios, '9.0'
+
   s.source       = { :git => "https://github.com/beck0527/TimeFaceFoundation.git"}
   s.source_files  = "TimeFaceFoundation/**/*.{h,m,c}"
   s.requires_arc = true
