@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.license      = "Copyright (C) 2015 TimeFace, Inc.  All rights reserved."
   s.author             = { "zguanyu" => "zhuguanyu@timeface.cn" }
   s.social_media_url   = "http://www.timeface.cn"
-  s.ios.deployment_target = "7.1"
+  s.ios.deployment_target = "9.0"
   s.source       = { :git => "https://github.com/beck0527/TimeFaceFoundation.git"}
   s.source_files  = "TimeFaceFoundation/**/*.{h,m,c}"
   s.requires_arc = true
@@ -30,4 +30,5 @@ Pod::Spec.new do |s|
   s.dependency 'SVProgressHUD'
   s.dependency 'FMDB'
   s.dependency 'MJRefresh'
+  s.dependency 'Reachability'
 end
