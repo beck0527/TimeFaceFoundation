@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <RETableViewManager/RETableViewManager.h>
+#import "MJRefresh.h"
 
 @class TFTableViewDataManager;
 
@@ -84,6 +85,8 @@ forRowAtIndexPath:(NSIndexPath *)indexPath;
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle
 forRowAtIndexPath:(NSIndexPath *)indexPath;
+
+- (MJRefreshHeader *)tableViewDiyHeaderView;
 
 @end
 

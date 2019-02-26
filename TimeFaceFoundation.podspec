@@ -13,7 +13,6 @@ Pod::Spec.new do |s|
   s.dependency 'SDWebImage'
   s.dependency 'DateTools'
   s.dependency 'JTCalendar'
-
   s.dependency 'GKFadeNavigationController'
   s.dependency 'JSONModel'
   s.dependency 'SSKeychain'
