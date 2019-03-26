@@ -7,7 +7,6 @@
 //
 
 #import "TNavigationViewController.h"
-#import "TNavigationBar.h"
 #import "ViewTransitionAnimator.h"
 #import "TFDefaultStyle.h"
 #import "TimeFaceFoundationConst.h"
@@ -47,7 +46,7 @@
     return self;
 }
 - (id)init {
-    self = [super initWithNavigationBarClass:[TNavigationBar class] toolbarClass:nil];
+    self = [super initWithNavigationBarClass:[UINavigationBar class] toolbarClass:nil];
     if(self) {
         // Custom initialization here, if needed.
         self.delegate = self;
@@ -57,18 +56,16 @@
 }
 
 - (id)initWithRootViewController:(UIViewController *)rootViewController {
-    self = [super initWithNavigationBarClass:[TNavigationBar class] toolbarClass:nil];
+    self = [super initWithNavigationBarClass:[UINavigationBar class] toolbarClass:nil];
     if(self) {
         
         self.delegate = self;
         _canDragBack = YES;
         self.viewControllers = @[rootViewController];
         
-        [[TNavigationBar appearance] setTitleTextAttributes:
+        [[UINavigationBar appearance] setTitleTextAttributes:
          @{ NSForegroundColorAttributeName: TFSTYLEVAR(navBarTitleColor),
             NSFontAttributeName: TFSTYLEVAR(navBarTitleFont)}];
-
-        [[TNavigationBar appearance] setBarBgColor:TFSTYLEVAR(navBarBackgroundColor)];
 
     }
     
