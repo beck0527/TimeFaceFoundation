@@ -54,6 +54,8 @@ static NSString *const QUERY_ITEM_SQL = @"SELECT json, createdTime from %@ where
 
 static NSString *const SELECT_ALL_SQL = @"SELECT * from %@";
 
+static NSString *const SELECT_SQL_CONDITION = @"SELECT * from %@ where %@";
+
 static NSString *const CLEAR_ALL_SQL = @"DELETE from %@";
 
 static NSString *const DELETE_ITEM_SQL = @"DELETE from %@ where id = ?";
@@ -228,6 +230,39 @@ static NSString *const DELETE_ITEMS_WITH_PREFIX_SQL = @"DELETE from %@ where id 
         return nil;
     }
     NSString * sql = [NSString stringWithFormat:SELECT_ALL_SQL, tableName];
+    __block NSMutableArray * result = [NSMutableArray array];
+    [_dbQueue inDatabase:^(FMDatabase *db) {
+        FMResultSet * rs = [db executeQuery:sql];
+        while ([rs next]) {
+            YTKKeyValueItem * item = [[YTKKeyValueItem alloc] init];
+            item.itemId = [rs stringForColumn:@"id"];
+            item.itemObject = [rs stringForColumn:@"json"];
+            item.createdTime = [rs dateForColumn:@"createdTime"];
+            [result addObject:item];
+        }
+        [rs close];
+    }];
+    // parse json string to object
+    NSError * error;
+    for (YTKKeyValueItem * item in result) {
+        error = nil;
+        id object = [NSJSONSerialization JSONObjectWithData:[item.itemObject dataUsingEncoding:NSUTF8StringEncoding]
+                                                    options:(NSJSONReadingAllowFragments) error:&error];
+        if (error) {
+            debugLog(@"ERROR, faild to prase to json.");
+        } else {
+            item.itemObject = object;
+        }
+    }
+    return result;
+}
+
+- (NSArray *)getItemsByQueryCondition:(NSString *)tableName condition:(NSString *)condition
+{
+    if ([YTKKeyValueStore checkTableName:tableName] == NO) {
+        return nil;
+    }
+    NSString * sql = [NSString stringWithFormat:SELECT_SQL_CONDITION, tableName, condition];
     __block NSMutableArray * result = [NSMutableArray array];
     [_dbQueue inDatabase:^(FMDatabase *db) {
         FMResultSet * rs = [db executeQuery:sql];

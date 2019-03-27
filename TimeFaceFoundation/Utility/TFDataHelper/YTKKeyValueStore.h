@@ -47,6 +47,8 @@
 
 - (NSArray *)getAllItemsFromTable:(NSString *)tableName;
 
+- (NSArray *)getItemsByQueryCondition:(NSString *)tableName condition:(NSString *)condition;
+
 - (void)deleteObjectById:(NSString *)objectId fromTable:(NSString *)tableName;
 
 - (void)deleteObjectsByIdArray:(NSArray *)objectIdArray fromTable:(NSString *)tableName;

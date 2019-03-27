@@ -46,6 +46,15 @@
 -(NSArray *) getAll:(Class)aClass;
 
 /**
+ *  根据条件查询数据
+ *
+ *  @param aClass
+ *
+ *  @return
+ */
+- (NSArray *)getItemsByCondition:(Class)aClass condition:(NSString *)condition;
+
+/**
  *  删除对应数据
  *
  *  @param object
