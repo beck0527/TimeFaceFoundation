@@ -43,7 +43,7 @@
  *
  *  @return
  */
--(NSArray *) getAll:(Class)aClass;
+- (NSArray *)getAll:(Class)aClass;
 
 /**
  *  根据条件查询数据
@@ -77,9 +77,15 @@
  *
  *  @param viewId
  *
- *  @return 
+ *  @return
  */
 -(ViewGuideModel *) loadViewGuideWithViewId:(NSString *)viewId;
 
 
+/**
+ *  批量保存／更新数据
+ */
+- (void)batchPutObject:(NSArray *)array idArray:(NSArray *)idsArray intoTable:(id)object;
+
 @end
+

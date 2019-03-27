@@ -33,6 +33,8 @@
 
 - (void)putObject:(id)object withId:(NSString *)objectId intoTable:(NSString *)tableName;
 
+- (void)batchPutObject:(NSArray *)array idArray:(NSArray *)idsArray intoTable:(NSString *)tableName;
+
 - (id)getObjectById:(NSString *)objectId fromTable:(NSString *)tableName;
 
 - (YTKKeyValueItem *)getYTKKeyValueItemById:(NSString *)objectId fromTable:(NSString *)tableName;
@@ -57,3 +59,4 @@
 
 
 @end
+

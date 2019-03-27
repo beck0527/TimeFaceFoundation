@@ -9,6 +9,7 @@
 #import "YTKKeyValueStore.h"
 #import "FMDatabase.h"
 #import "FMDatabaseQueue.h"
+#import "JSONModel.h"
 
 #ifdef DEBUG
 #define debugLog(...)    NSLog(__VA_ARGS__)
@@ -149,6 +150,47 @@ static NSString *const DELETE_ITEMS_WITH_PREFIX_SQL = @"DELETE from %@ where id 
     if (!result) {
         debugLog(@"ERROR, failed to insert/replace into table: %@", tableName);
     }
+}
+
+- (void)batchPutObject:(NSArray *)array idArray:(NSArray *)idsArray intoTable:(NSString *)tableName
+{
+    if ([YTKKeyValueStore checkTableName:tableName] == NO) {
+        return;
+    }
+    
+    [_dbQueue inTransaction:^(FMDatabase *db, BOOL *rollback) {
+        
+        int index = 0;
+        
+        BOOL successFlag = YES;
+        
+        for(id object in array)
+        {
+            NSError* error;
+            NSData* data = [NSJSONSerialization dataWithJSONObject:object options:0 error:&error];
+            if (error) {
+                debugLog(@"ERROR, faild to get json data");
+                return;
+            }
+            NSString * jsonString = [[NSString alloc] initWithData:data encoding:(NSUTF8StringEncoding)];
+            NSDate * createdTime = [NSDate date];
+            NSString * sql = [NSString stringWithFormat:UPDATE_ITEM_SQL, tableName];
+            
+            successFlag = [db executeUpdate:sql, [idsArray objectAtIndex:index], jsonString, createdTime];
+            
+            if(!successFlag)
+            {
+                break;
+            }
+            
+            index++;
+        }
+        
+        if (!successFlag) {
+            *rollback = YES;
+            return;
+        }
+    }];
 }
 
 - (id)getObjectById:(NSString *)objectId fromTable:(NSString *)tableName {
@@ -299,6 +341,7 @@ static NSString *const DELETE_ITEMS_WITH_PREFIX_SQL = @"DELETE from %@ where id 
     [_dbQueue inDatabase:^(FMDatabase *db) {
         result = [db executeUpdate:sql, objectId];
     }];
+    
     if (!result) {
         debugLog(@"ERROR, failed to delete item from table: %@", tableName);
     }
@@ -349,3 +392,4 @@ static NSString *const DELETE_ITEMS_WITH_PREFIX_SQL = @"DELETE from %@ where id 
 }
 
 @end
+

@@ -51,6 +51,32 @@ const YTKKeyValueStore *store;
 }
 
 /**
+ *  批量保存／更新数据
+ *
+ *  @param object
+ */
+- (void)batchPutObject:(NSArray *)array idArray:(NSArray *)idsArray intoTable:(id)object
+{
+    NSString *tableName = NSStringFromClass([object class]);
+    
+    NSMutableArray* objectArray = [NSMutableArray array];
+    
+    for(id object in array)
+    {
+        NSDictionary *dic;
+        if (![object isKindOfClass:[NSDictionary class]]) {
+            dic = [object toDictionary];
+        } else {
+            dic = object;
+        }
+        [objectArray addObject:dic];
+    }
+    
+    [store createTableWithName:tableName];  //建表
+    [store batchPutObject:objectArray idArray:idsArray intoTable:tableName];
+}
+
+/**
  *  获取一个对象数据
  *
  *  @param aClass
@@ -68,8 +94,6 @@ const YTKKeyValueStore *store;
     return object;
 }
 
-
-
 /**
  *  获取所有数据
  *
@@ -77,7 +101,7 @@ const YTKKeyValueStore *store;
  *
  *  @return
  */
--(NSArray *) getAll:(Class)aClass {
+- (NSArray *)getAll:(Class)aClass {
     return [store getAllItemsFromTable:NSStringFromClass(aClass)];
 }
 
@@ -91,7 +115,6 @@ const YTKKeyValueStore *store;
 - (NSArray *)getItemsByCondition:(Class)aClass condition:(NSString *)condition {
     return [store getItemsByQueryCondition:NSStringFromClass([aClass class]) condition:condition];
 }
-
 
 /**
  *  删除对应数据
@@ -141,3 +164,4 @@ const YTKKeyValueStore *store;
 }
 
 @end
+
