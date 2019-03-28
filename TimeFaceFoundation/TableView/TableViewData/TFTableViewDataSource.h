@@ -185,5 +185,10 @@ forRowAtIndexPath:(NSIndexPath *)indexPath;
  */
 - (void)stopPullRefresh;
 
+/**
+ *  加载新数据
+ */
+- (void)loadNewData;
+
 @end
 
