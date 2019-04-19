@@ -309,7 +309,7 @@ const static NSInteger kPageSize = 30;
                      //                     }
                      if (strongSelf.delegate && [strongSelf.delegate respondsToSelector:@selector(didFinishLoad:object:error:)]) {
                          [strongSelf.delegate didFinishLoad:dataLoadPolicy object:object error:error?error:hanldeError];
-                         [strongSelf stopPullRefresh];
+                         //[strongSelf stopPullRefresh];
                      }
                      switch (dataLoadPolicy) {
                          case DataLoadPolicyNone:
@@ -356,6 +356,7 @@ const static NSInteger kPageSize = 30;
                                            completed:^(id result, NSError *error)
      {
          if (loadPolicy != DataLoadPolicyCache) {
+             [self stopPullRefresh];
              handleTableViewData(result,loadPolicy,error);
              self->_loading = NO;
          }
