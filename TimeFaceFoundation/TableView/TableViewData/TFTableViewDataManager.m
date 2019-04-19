@@ -82,7 +82,7 @@
 
         if (sectionCount > 0) {
             [self.tableViewDataSource.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionCount]
-                                              withRowAnimation:UITableViewRowAnimationBottom];
+                                              withRowAnimation:UITableViewRowAnimationNone];
         }
         else {
             [self.tableViewDataSource.tableView reloadData];
